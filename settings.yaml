@@ -1,0 +1,12 @@
+data:
+  path: csvs/vehicles.csv
+photos:
+  base_folder: photos
+log:
+  user:
+    file_path: logs/user.log
+  system:
+    file_path: logs/system.log
+dealer:
+  license_id: 475
+  url: https://www.canadasmotors.ca
