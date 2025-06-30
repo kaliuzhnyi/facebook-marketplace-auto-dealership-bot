@@ -1,0 +1,16 @@
+data:
+  path: csvs/vehicles.csv
+dealer:
+  license_id: 475
+  url: https://www.canadasmotors.ca
+log:
+  system:
+    file_path: logs/system.log
+  user:
+    file_path: logs/user.log
+photos:
+  base_folder: photos
+scraper:
+  random_delay:
+    max: 7.2
+    min: 0.29

@@ -1,6 +1,8 @@
 # Remove and then publish each listing
 from selenium.webdriver.common.by import By
 
+from helpers.csv_helper import Row
+
 
 def update_listings(listings, type, scraper):
     # If listings are empty stop the function
@@ -69,7 +71,7 @@ def publish_listing(data, listing_type, scraper):
     # scraper.element_click('a[href="/marketplace/create/' + listing_type + '/"]')
 
     # Create string that contains all of the image paths separeted by \n
-    images_path = generate_multiple_images_path(data['Photos Folder'], data['Photos Names'])
+    images_path = generate_multiple_images_path(data[Row.HEADER_PHOTOS_FOLDER], data[Row.HEADER_PHOTOS_NAMES])
     # Add images to the the listing
     scraper.input_file_add_files('input[accept="image/*,image/heif,image/heic"]', images_path)
 
@@ -78,10 +80,18 @@ def publish_listing(data, listing_type, scraper):
     # Call function by name dynamically
     globals()[function_name](data, scraper)
 
-    scraper.element_send_keys_by_xpath('//span[text()="Price"]/following-sibling::input[1]', data['Price'])
-    scraper.element_send_keys_by_xpath('//span[text()="Description"]/following-sibling::div/textarea',
-                                       data['Description'])
-    scraper.element_send_keys_by_xpath('//span[text()="Location"]/following-sibling::input[1]', data['Location'])
+    price_key = Row.HEADER_PRICE
+    if price_key in data:
+        scraper.element_send_keys_by_xpath('//span[text()="Price"]/following-sibling::input[1]', data[price_key])
+
+    description_key = Row.HEADER_DESCRIPTION
+    if description_key in data:
+        scraper.element_send_keys_by_xpath('//span[text()="Description"]/following-sibling::div/textarea',
+                                           data[Row.HEADER_DESCRIPTION])
+
+    location_key = Row.HEADER_LOCATION
+    if location_key in data:
+        scraper.element_send_keys_by_xpath('//span[text()="Location"]/following-sibling::input[1]', data[location_key])
     scraper.element_click('ul[role="listbox"] li:first-child > div')
 
     next_button_selector = 'div [aria-label="Next"] > div'
@@ -145,32 +155,31 @@ def generate_multiple_images_path(path, images):
 
 # Add specific fields for listing from type vehicle
 def add_fields_for_vehicle(data, scraper):
-
     # Expand vehicle type select
-    vehicle_type_key = 'Vehicle Type'
+    vehicle_type_key = Row.HEADER_VEHICLE_TYPE
     if vehicle_type_key in data:
         scraper.element_click_by_xpath('//span[text()="Vehicle type"]')
         scraper.element_click_by_xpath('//span[text()="' + data[vehicle_type_key] + '"]')
 
     # Scroll to years select
-    year_key = 'Year'
+    year_key = Row.HEADER_YEAR
     if year_key in data:
         scraper.scroll_to_element_by_xpath('//span[text()="Year"]')
         scraper.element_click_by_xpath('//span[text()="Year"]')
         scraper.element_click_by_xpath('//span[text()="' + data[year_key] + '"]')
 
     # Scroll to make select
-    make_key = 'Make'
+    make_key = Row.HEADER_MAKE
     if make_key in data:
         scraper.scroll_to_element_by_xpath('//span[text()="Make"]')
         scraper.element_click_by_xpath('//span[text()="Make"]')
         scraper.element_click_by_xpath('//span[text()="' + data[make_key] + '"]')
 
-    model_key = 'Model'
+    model_key = Row.HEADER_MODEL
     if model_key in data:
         scraper.element_send_keys_by_xpath('//span[text()="Model"]/following-sibling::input[1]', data[model_key])
 
-    # Scroll to exterior color select
+    # Scroll to body type select
     body_type_key = 'Body Type'
     if body_type_key in data and data[body_type_key]:
         scraper.scroll_to_element_by_xpath('//span[text()="Body style"]')
@@ -178,33 +187,33 @@ def add_fields_for_vehicle(data, scraper):
         scraper.element_click_by_xpath('//span[text()="' + data[body_type_key] + '"]')
 
     # Scroll to exterior color select
-    exterior_color_key = 'Exterior Color'
+    exterior_color_key = Row.HEADER_EXTERIOR_COLOR
     if exterior_color_key in data:
         scraper.scroll_to_element_by_xpath('//span[text()="Exterior color"]')
         scraper.element_click_by_xpath('//span[text()="Exterior color"]')
         scraper.element_click_by_xpath('//span[text()="' + data[exterior_color_key] + '"]')
 
     # Scroll to interior color select
-    interior_color_key = 'Interior Color'
+    interior_color_key = Row.HEADER_INTERIOR_COLOR
     if interior_color_key in data:
         scraper.scroll_to_element_by_xpath('//span[text()="Interior color"]')
         scraper.element_click_by_xpath('//span[text()="Interior color"]')
         scraper.element_click_by_xpath('//span[text()="' + data[interior_color_key] + '"]')
 
     # Scroll to mileage input
-    mileage_key = 'Mileage'
+    mileage_key = Row.HEADER_MILEAGE
     if mileage_key in data:
         scraper.scroll_to_element_by_xpath('//span[text()="Mileage"]/following-sibling::input[1]')
         scraper.element_send_keys_by_xpath('//span[text()="Mileage"]/following-sibling::input[1]', data[mileage_key])
 
     # Vehicle condition
-    vehicle_condition_key = 'Vehicle Condition'
+    vehicle_condition_key = Row.HEADER_VEHICLE_CONDITION
     if vehicle_condition_key in data and data[vehicle_condition_key]:
         scraper.element_click_by_xpath('//span[text()="Vehicle condition"]')
         scraper.element_click_by_xpath('//span[text()="' + data[vehicle_condition_key] + '"]')
 
     # Fuel Type
-    fuel_type_key = 'Fuel Type'
+    fuel_type_key = Row.HEADER_FUEL_TYPE
     if fuel_type_key in data and data[fuel_type_key]:
         scraper.element_click_by_xpath('//span[text()="Fuel type"]')
         scraper.element_click_by_xpath('//span[text()="' + data[fuel_type_key] + '"]')
@@ -243,14 +252,14 @@ def generate_title_for_listing_type(data, listing_type):
         title = data['Title']
 
     if listing_type == 'vehicle':
-        title = data['Year'] + ' ' + data['Make'] + ' ' + data['Model']
+        title = data[Row.HEADER_YEAR] + ' ' + data[Row.HEADER_MAKE] + ' ' + data[Row.HEADER_MODEL]
 
     return title
 
 
 def add_listing_to_multiple_groups(data, scraper):
     # Create an array for group names by spliting the string by this symbol ";"
-    group_names = data['Groups'].split(';')
+    group_names = data[Row.HEADER_GROUPS].split(';')
 
     # If the groups are empty do not do nothing
     if not group_names:
@@ -273,7 +282,7 @@ def post_listing_to_multiple_groups(data, listing_type, scraper):
         return
 
     # Create an array for group names by spliting the string by this symbol ";"
-    group_names = data['Groups'].split(';')
+    group_names = data[Row.HEADER_GROUPS].split(';')
 
     # If the groups are empty do not do nothing
     if not group_names:
@@ -302,11 +311,11 @@ def post_listing_to_multiple_groups(data, listing_type, scraper):
         if (scraper.find_element(selector='[aria-label="Create a public post…"]',
                                  exit_on_missing_element=False,
                                  wait_element_time=3)):
-            scraper.element_send_keys('[aria-label="Create a public post…"]', data['Description'])
+            scraper.element_send_keys('[aria-label="Create a public post…"]', data[Row.HEADER_DESCRIPTION])
         elif (scraper.find_element(selector='[aria-label="Write something..."]',
                                    exit_on_missing_element=False,
                                    wait_element_time=3)):
-            scraper.element_send_keys('[aria-label="Write something..."]', data['Description'])
+            scraper.element_send_keys('[aria-label="Write something..."]', data[Row.HEADER_DESCRIPTION])
 
         scraper.element_click('[aria-label="Post"]:not([aria-disabled])')
         # Wait till the post is posted successfully

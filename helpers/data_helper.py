@@ -4,19 +4,19 @@ from urllib.parse import urljoin
 
 import requests
 
-from config_loader import DEALER_LICENSE_ID, DEALER_URL, DATA_PATH, PHOTOS_BASE_FOLDER
+from config import CONFIG_DEALER_LICENSE_ID, CONFIG_DEALER_URL, CONFIG_PHOTOS_BASE_FOLDER
 from helpers.csv_helper import Row, push_data_to_csv
 
 
 def import_data_to_csv(csv_file_name: str):
-    data = import_data_from_website_cams(DEALER_LICENSE_ID)
+    data = import_data_from_website_cams(CONFIG_DEALER_LICENSE_ID)
     push_data_to_csv(data, csv_file_name)
 
 
 def import_data_from_website_cams(license_id: str) -> list[Row]:
     result = []
 
-    url = urljoin(DEALER_URL, '/php/get_list.php')
+    url = urljoin(CONFIG_DEALER_URL, '/php/get_list.php')
     params = {
         "sql": f"select * from vehicles_for_sale where license = {license_id} order by online_posted desc"
     }
@@ -25,7 +25,7 @@ def import_data_from_website_cams(license_id: str) -> list[Row]:
     response = requests.get(url, params=params, headers=headers)
     response.raise_for_status()
 
-    clear_photos_base_folder(PHOTOS_BASE_FOLDER)
+    clear_photos_base_folder(CONFIG_PHOTOS_BASE_FOLDER)
 
     vehicles = response.json()
     for item in vehicles:
@@ -80,7 +80,7 @@ def get_and_save_photos(stockno: str,
     Returns a list of downloaded file names.
     """
     sql = f"select url from photo_url where stockno = '{stockno}' and license = {license_id} order by sequence_id"
-    url = urljoin(DEALER_URL, '/php/get_list.php')
+    url = urljoin(CONFIG_DEALER_URL, '/php/get_list.php')
     params = {"sql": sql}
     headers = {"User-Agent": "Mozilla/5.0"}
 
@@ -100,7 +100,7 @@ def get_and_save_photos(stockno: str,
         if not rel_url:
             continue
 
-        photo_url = urljoin(DEALER_URL, f'/uploads/{license_id}/{rel_url}')
+        photo_url = urljoin(CONFIG_DEALER_URL, f'/uploads/{license_id}/{rel_url}')
         filename = os.path.basename(rel_url)
         save_path = os.path.join(photos_folder, filename)
 

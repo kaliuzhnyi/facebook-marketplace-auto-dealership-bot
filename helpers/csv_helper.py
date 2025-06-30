@@ -3,7 +3,7 @@ import os
 from enum import Enum
 from pathlib import Path
 
-from config_loader import PHOTOS_BASE_FOLDER
+from config import CONFIG_PHOTOS_BASE_FOLDER
 
 
 class VehicleType(str, Enum):
@@ -124,7 +124,23 @@ class Transmission(str, Enum):
             return Transmission.AUTOMATIC
         return None
 
+
 class Row:
+    HEADER_PHOTOS_FOLDER = 'photos_folder'
+    HEADER_PHOTOS_NAMES = 'photos_names'
+    HEADER_VEHICLE_TYPE = 'vehicle_type'
+    HEADER_VEHICLE_CONDITION = 'vehicle_condition'
+    HEADER_YEAR = 'year'
+    HEADER_MAKE = 'make'
+    HEADER_MODEL = 'model'
+    HEADER_EXTERIOR_COLOR = 'exterior_color'
+    HEADER_INTERIOR_COLOR = 'interior_color'
+    HEADER_MILEAGE = 'mileage'
+    HEADER_FUEL_TYPE = 'fuel_type'
+    HEADER_PRICE = 'price'
+    HEADER_DESCRIPTION = 'description'
+    HEADER_LOCATION = 'location'
+    HEADER_GROUPS = 'groups'
 
     def __init__(self,
                  photos_folder: str = '',
@@ -167,7 +183,7 @@ class Row:
         self.stockno = stockno
 
         if not self.photos_folder and self.stockno:
-            photos_folder_abs = os.path.join(Path(__file__).resolve().parent, PHOTOS_BASE_FOLDER)
+            photos_folder_abs = os.path.join(Path(__file__).resolve().parent, CONFIG_PHOTOS_BASE_FOLDER)
             self.photos_folder = os.path.join(photos_folder_abs, self.stockno)
 
 
@@ -175,10 +191,8 @@ class Row:
 def get_data_from_csv(file_path: str):
     data = []
 
-    # file_path = 'csvs' + os.path.sep + csv_file_name + '.csv'
-
     try:
-        with open(file_path, encoding="UTF-8-SIG") as csv_file:
+        with open(file_path, encoding="utf-8") as csv_file:
             csv_dictionary = csv.DictReader(csv_file, delimiter=',')
 
             for dictionary_row in csv_dictionary:
@@ -191,25 +205,22 @@ def get_data_from_csv(file_path: str):
 
 
 def push_data_to_csv(rows: list[Row], file_path: str):
-    """
-    Exports a list of Row objects to a CSV file in the given format.
-    """
     headers = [
-        "Photos Folder",
-        "Photos Names",
-        "Vehicle Type",
-        "Vehicle Condition",
-        "Year",
-        "Make",
-        "Model",
-        "Exterior Color",
-        "Interior Color",
-        "Mileage",
-        "Fuel Type",
-        "Price",
-        "Description",
-        "Location",
-        "Groups"
+        Row.HEADER_PHOTOS_FOLDER,
+        Row.HEADER_PHOTOS_NAMES,
+        Row.HEADER_VEHICLE_TYPE,
+        Row.HEADER_VEHICLE_CONDITION,
+        Row.HEADER_YEAR,
+        Row.HEADER_MAKE,
+        Row.HEADER_MODEL,
+        Row.HEADER_EXTERIOR_COLOR,
+        Row.HEADER_INTERIOR_COLOR,
+        Row.HEADER_MILEAGE,
+        Row.HEADER_FUEL_TYPE,
+        Row.HEADER_PRICE,
+        Row.HEADER_DESCRIPTION,
+        Row.HEADER_LOCATION,
+        Row.HEADER_GROUPS
     ]
 
     with open(file_path, mode="w", newline='', encoding="utf-8") as csvfile:
@@ -222,6 +233,7 @@ def push_data_to_csv(rows: list[Row], file_path: str):
                 row.photos_folder,
                 '; '.join(row.photos_names),
                 row.vehicle_type,
+                row.vehicle_condition,
                 row.year if row.year is not None else '',
                 row.make,
                 row.model,

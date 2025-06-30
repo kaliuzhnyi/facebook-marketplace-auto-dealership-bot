@@ -1,12 +1,12 @@
 import logging
 
-from config_loader import LOG_USER_FILE_PATH, LOG_SYSTEM_FILE_PATH
+from config import CONFIG_LOG_USER_FILE_PATH, CONFIG_LOG_SYSTEM_FILE_PATH
 
 # --- USER Logger ---
 user_logger = logging.getLogger("user")
 user_logger.setLevel(logging.INFO)
 
-user_handler = logging.FileHandler(LOG_USER_FILE_PATH, encoding="utf-8")
+user_handler = logging.FileHandler(CONFIG_LOG_USER_FILE_PATH, encoding="utf-8")
 user_handler.setLevel(logging.INFO)
 user_handler.setFormatter(logging.Formatter('[%(asctime)s] %(message)s', datefmt='%H:%M:%S'))
 
@@ -18,7 +18,7 @@ if not user_logger.hasHandlers():
 system_logger = logging.getLogger("system")
 system_logger.setLevel(logging.DEBUG)
 
-system_handler = logging.FileHandler(LOG_SYSTEM_FILE_PATH, encoding="utf-8")
+system_handler = logging.FileHandler(CONFIG_LOG_SYSTEM_FILE_PATH, encoding="utf-8")
 system_handler.setLevel(logging.DEBUG)
 system_handler.setFormatter(logging.Formatter('[%(asctime)s] %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
 
