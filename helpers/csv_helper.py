@@ -1,12 +1,21 @@
 import csv
-import os
-from enum import Enum
-from pathlib import Path
-
-from config import CONFIG_PHOTOS_BASE_FOLDER
+import dataclasses
+from dataclasses import asdict
+from enum import StrEnum, Enum
 
 
-class VehicleType(str, Enum):
+class BaseEnum(StrEnum):
+    @classmethod
+    def from_str(cls, value: str):
+        if not value:
+            return getattr(cls, "_default_value", None)
+        for item in cls:
+            if item.value.lower() == value.lower():
+                return item
+        return getattr(cls, "_default_value", None)
+
+
+class VehicleType(BaseEnum):
     CAR_TRUCK = 'Car/Track'
     MOTORCYCLE = 'Motorcycle'
     POWERSPORT = 'Powersport'
@@ -16,15 +25,10 @@ class VehicleType(str, Enum):
     COMMERCIAL_INDUSTRIAL = 'Commercial/Industrial'
     OTHER = 'Other'
 
-    @classmethod
-    def from_str(cls, label: str) -> 'VehicleType':
-        for value in cls:
-            if value.value.lower() == label.lower():
-                return value
-        return VehicleType.OTHER
+    _default_value = CAR_TRUCK
 
 
-class BodyType(str, Enum):
+class BodyType(BaseEnum):
     COUPE = 'Coupe'
     TRUCK = 'Truck'
     SEDAN = 'Sedan'
@@ -36,15 +40,10 @@ class BodyType(str, Enum):
     SMALL_CAR = 'Small Car'
     OTHER = 'Other'
 
-    @classmethod
-    def from_str(cls, label: str) -> 'BodyType':
-        for value in cls:
-            if value.value.lower() == label.lower():
-                return value
-        return BodyType.OTHER
+    _default_value = OTHER
 
 
-class BaseColor(str, Enum):
+class BaseColor(BaseEnum):
     BLACK = "Black"
     BLUE = "Blue"
     BROWN = "Brown"
@@ -66,15 +65,10 @@ class BaseColor(str, Enum):
     TURQUOISE = "Turquoise"
     OTHER = "Other"
 
-    @classmethod
-    def from_str(cls, label: str) -> 'BaseColor':
-        for value in cls:
-            if value.value.lower() == label.lower():
-                return value
-        return BaseColor.OTHER
+    _default_value = OTHER
 
 
-class FuelType(str, Enum):
+class FuelType(BaseEnum):
     DIESEL = "Diesel"
     ELECTRIC = "Electric"
     GASOLINE = "Gasoline"
@@ -84,165 +78,109 @@ class FuelType(str, Enum):
     PLUG_IN_HYBRID = "Plug-in hybrid"
     OTHER = "Other"
 
-    @classmethod
-    def from_str(cls, value: str):
-        for item in cls:
-            if item.value.lower() == value.lower():
-                return item
-        return FuelType.OTHER
+    _default_value = OTHER
 
 
-class VehicleCondition(str, Enum):
+class VehicleCondition(BaseEnum):
     EXCELLENT = "Excellent"
     VERY_GOOD = "Very good"
     GOOD = "Good"
     FAIR = "Fair"
     POOR = "Poor"
 
-    @classmethod
-    def from_str(cls, value: str):
-        if not value:
-            return None
-        for item in cls:
-            if item.value.lower() == value.lower():
-                return item
-        return None
+    _default_value = GOOD
 
 
-class Transmission(str, Enum):
+class Transmission(BaseEnum):
     MANUAL = "Manual transmission"
     AUTOMATIC = "Automatic transmission"
 
     @classmethod
     def from_str(cls, value: str):
-        for item in cls:
-            if item.value.lower() == value.lower():
-                return item
+        result = super().from_str(value)
+        if result:
+            return result
         if value.lower() == 'manual':
             return Transmission.MANUAL
         if value.lower() == 'automatic':
             return Transmission.AUTOMATIC
-        return None
+        return result
 
 
+@dataclasses.dataclass
 class Row:
-    HEADER_PHOTOS_FOLDER = 'photos_folder'
-    HEADER_PHOTOS_NAMES = 'photos_names'
-    HEADER_VEHICLE_TYPE = 'vehicle_type'
-    HEADER_VEHICLE_CONDITION = 'vehicle_condition'
-    HEADER_YEAR = 'year'
-    HEADER_MAKE = 'make'
-    HEADER_MODEL = 'model'
-    HEADER_EXTERIOR_COLOR = 'exterior_color'
-    HEADER_INTERIOR_COLOR = 'interior_color'
-    HEADER_MILEAGE = 'mileage'
-    HEADER_FUEL_TYPE = 'fuel_type'
-    HEADER_PRICE = 'price'
-    HEADER_DESCRIPTION = 'description'
-    HEADER_LOCATION = 'location'
-    HEADER_GROUPS = 'groups'
+    photos_folder: str = ''
+    photos_names: list[str] = None
+    vehicle_type: VehicleType = VehicleType._default_value
+    vehicle_condition: VehicleCondition | None = VehicleCondition._default_value
+    body_type: BodyType = BodyType._default_value
+    year: int | None = None
+    make: str = ''
+    model: str = ''
+    exterior_color: BaseColor = BaseColor._default_value
+    interior_color: BaseColor = BaseColor._default_value
+    mileage: int = 0
+    fuel_type: FuelType = FuelType._default_value
+    transmission: Transmission | None = None
+    price: float = 0.0
+    title: str = ''
+    description: str = ''
+    location: str = ''
+    groups: list[str] = None
+    stockno: str = ''
+    vin: str = ''
 
-    def __init__(self,
-                 photos_folder: str = '',
-                 photos_names: list[str] = None,
-                 vehicle_type: str | VehicleType = VehicleType.CAR_TRUCK,
-                 vehicle_condition: str | VehicleCondition | None = None,
-                 body_type: str | BodyType = BodyType.SUV,
-                 year: int | None = None,
-                 make: str = '',
-                 model: str = '',
-                 exterior_color: str | BaseColor = '',
-                 interior_color: str | BaseColor = '',
-                 mileage: int = 0,
-                 fuel_type: str | FuelType = '',
-                 transmission: str | Transmission | None = None,
-                 price: float = 0.0,
-                 title: str = '',
-                 description: str = '',
-                 location: str = '',
-                 groups: list[str] = None,
-                 stockno: str = ''):
-        self.photos_folder = photos_folder
-        self.photos_names = photos_names
-        self.vehicle_type = VehicleType.from_str(vehicle_type)
-        self.vehicle_condition = None if vehicle_condition is None else VehicleCondition.from_str(vehicle_condition)
-        self.body_type = BodyType.from_str(body_type)
-        self.year = year
-        self.make = make
-        self.model = model
-        self.exterior_color = BaseColor.from_str(exterior_color)
-        self.interior_color = BaseColor.from_str(interior_color)
-        self.mileage = mileage
-        self.fuel_type = FuelType.from_str(fuel_type)
-        self.transmission = None if transmission is None else Transmission.from_str(transmission)
-        self.price = price
-        self.title = title
-        self.description = description
-        self.location = location
-        self.groups = groups
-        self.stockno = stockno
+    def __getitem__(self, key):
+        return getattr(self, key)
 
-        if not self.photos_folder and self.stockno:
-            photos_folder_abs = os.path.join(Path(__file__).resolve().parent, CONFIG_PHOTOS_BASE_FOLDER)
-            self.photos_folder = os.path.join(photos_folder_abs, self.stockno)
+    def __setitem__(self, key, value):
+        setattr(self, key, value)
 
 
-# def get_data_from_csv(csv_file_name: str):
-def get_data_from_csv(file_path: str):
-    data = []
-
-    try:
-        with open(file_path, encoding="utf-8") as csv_file:
-            csv_dictionary = csv.DictReader(csv_file, delimiter=',')
-
-            for dictionary_row in csv_dictionary:
-                data.append(dictionary_row)
-    except:
-        print('File was not found in csvs' + file_path)
-        exit()
-
-    return data
+def get_data_from_csv(file_path: str) -> list[Row]:
+    rows = []
+    with open(file_path, newline="", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+        for row_dict in reader:
+            rows.append(Row(
+                photos_folder=row_dict.get('photos_folder', ''),
+                photos_names=row_dict.get('photos_names', '').split(";"),
+                vehicle_type=VehicleType.from_str(row_dict.get('vehicle_type', '')),
+                vehicle_condition=VehicleCondition.from_str(row_dict.get('vehicle_condition', '')),
+                body_type=BodyType.from_str(row_dict.get('body_type', '')),
+                year=row_dict.get('year', ''),
+                make=row_dict.get('make', ''),
+                model=row_dict.get('model', ''),
+                exterior_color=BaseColor.from_str(row_dict.get('exterior_color', '')),
+                interior_color=BaseColor.from_str(row_dict.get('interior_color', '')),
+                mileage=int(row_dict.get('mileage', '0')),
+                fuel_type=FuelType.from_str(row_dict.get('fuel_type', '')),
+                transmission=Transmission.from_str(row_dict.get('transmission', '')),
+                price=row_dict.get('price', ''),
+                title=row_dict.get('title', ''),
+                description=row_dict.get('description', ''),
+                location=row_dict.get('location', ''),
+                groups=row_dict.get('groups', '').split(";"),
+                stockno=row_dict.get('stockno', ''),
+                vin=row_dict.get('vin', '')
+            ))
+    return rows
 
 
 def push_data_to_csv(rows: list[Row], file_path: str):
-    headers = [
-        Row.HEADER_PHOTOS_FOLDER,
-        Row.HEADER_PHOTOS_NAMES,
-        Row.HEADER_VEHICLE_TYPE,
-        Row.HEADER_VEHICLE_CONDITION,
-        Row.HEADER_YEAR,
-        Row.HEADER_MAKE,
-        Row.HEADER_MODEL,
-        Row.HEADER_EXTERIOR_COLOR,
-        Row.HEADER_INTERIOR_COLOR,
-        Row.HEADER_MILEAGE,
-        Row.HEADER_FUEL_TYPE,
-        Row.HEADER_PRICE,
-        Row.HEADER_DESCRIPTION,
-        Row.HEADER_LOCATION,
-        Row.HEADER_GROUPS
-    ]
+    if not rows:
+        return
 
-    with open(file_path, mode="w", newline='', encoding="utf-8") as csvfile:
-        writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+    fieldnames = [f.name for f in dataclasses.fields(rows[0])]
 
-        writer.writerow(headers)
-
+    with open(file_path, mode="w", newline="", encoding="utf-8") as file:
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
         for row in rows:
-            writer.writerow([
-                row.photos_folder,
-                '; '.join(row.photos_names),
-                row.vehicle_type,
-                row.vehicle_condition,
-                row.year if row.year is not None else '',
-                row.make,
-                row.model,
-                row.exterior_color,
-                row.interior_color,
-                row.mileage,
-                row.fuel_type,
-                row.price,
-                row.description,
-                row.location,
-                '; '.join(row.groups)
-            ])
+            data = asdict(row)
+            for key, value in data.items():
+                if isinstance(value, Enum):
+                    data[key] = value.value
+                elif isinstance(value, list):
+                    data[key] = ";".join(value)
+            writer.writerow(data)

@@ -42,9 +42,9 @@ def launch_facebook_marketplace_bot():
         # # Import data from external resources to csv file
         #import_data_to_csv(CONFIG_DATA_PATH)
         # # Get data for vehicle type listings from csvs/vehicles.csv
-        #vehicle_listings = get_data_from_csv(CONFIG_DATA_PATH)
+        vehicle_listings = get_data_from_csv(CONFIG_DATA_PATH)
         # Publish all of the vehicles into the facebook marketplace
-        #update_listings(vehicle_listings, 'vehicle', scraper)
+        update_listings(vehicle_listings, scraper)
 
     def on_start_button_click():
         threading.Thread(target=run_marketplace_bot).start()

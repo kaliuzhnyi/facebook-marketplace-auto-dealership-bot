@@ -1,11 +1,12 @@
 import os
 import shutil
+from pathlib import Path
 from urllib.parse import urljoin
 
 import requests
 
-from config import CONFIG_DEALER_LICENSE_ID, CONFIG_DEALER_URL, CONFIG_PHOTOS_BASE_FOLDER
-from helpers.csv_helper import Row, push_data_to_csv
+from config import CONFIG_DEALER_LICENSE_ID, CONFIG_DEALER_URL, CONFIG_PHOTOS_BASE_FOLDER, CONFIG
+from helpers.csv_helper import Row, push_data_to_csv, BaseColor, FuelType, Transmission, BodyType
 
 
 def import_data_to_csv(csv_file_name: str):
@@ -42,22 +43,28 @@ def import_data_from_website_cams(license_id: str) -> list[Row]:
 
             stockno = item.get('stockno', '').strip()
 
+            photos_folder = os.path.join(Path(__file__).resolve().parent, CONFIG['photos']['base_folder'])
+            if stockno:
+                photos_folder = os.path.join(photos_folder, stockno)
+
             row = Row(
-                body_type=str(item.get('body_type') or item.get('product', '')).strip(),
+                body_type=BodyType.from_str(str(item.get('body_type') or item.get('product', '')).strip()),
                 year=year,
                 make=make,
                 model=model,
-                exterior_color=item.get('colour').strip(),
-                interior_color=item.get('interior').strip(),
+                exterior_color=BaseColor.from_str(str(item.get('colour', '')).strip()),
+                interior_color=BaseColor.from_str(str(item.get('interior', '')).strip()),
                 mileage=mileage,
-                fuel_type=str(item.get('fuel_type', '')).strip(),
-                transmission=str(item.get('transmission_description')).strip(),
+                fuel_type=FuelType.from_str(str(item.get('fuel_type', '')).strip()),
+                transmission=Transmission.from_str(str(item.get('transmission_description')).strip()),
                 price=price,
                 title=f"{year or ''} {make} {model}".strip(),
                 description=str(item.get('online_description', '')).strip(),
                 location=f"{item.get('city', '').strip()}, {item.get('province', '').strip()}",
                 groups=['default'],
-                stockno=stockno
+                stockno=stockno,
+                vin=item.get('vin', '').strip(),
+                photos_folder=photos_folder
             )
 
             if stockno:
@@ -68,7 +75,7 @@ def import_data_from_website_cams(license_id: str) -> list[Row]:
             result.append(row)
         except Exception as e:
             print(f"Error to processing stockno={item.get('stockno')}: {e}")
-
+        break
     return result
 
 
@@ -117,9 +124,7 @@ def get_and_save_photos(stockno: str,
 
 
 def clear_photos_base_folder(photos_folder: str):
-    """
-    Deletes all files and subdirectories in the PHOTOS_BASE_FOLDER.
-    """
+
     if not os.path.exists(photos_folder):
         return  # Nothing to clear
 
