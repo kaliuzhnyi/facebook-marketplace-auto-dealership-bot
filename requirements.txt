@@ -2,3 +2,4 @@ webdriver-manager~=4.0.2
 selenium~=4.33.0
 pyyaml~=6.0.2
 nicegui~=2.20.0
+apscheduler~=3.11.0

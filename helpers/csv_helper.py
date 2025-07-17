@@ -1,148 +1,20 @@
 import csv
 import dataclasses
 from dataclasses import asdict
-from enum import StrEnum, Enum
+from enum import Enum
+
+from config import CONFIG
+from helpers.model import VehicleType, BodyType, BaseColor, FuelType, VehicleCondition, Transmission, Listing
 
 
-class BaseEnum(StrEnum):
-    @classmethod
-    def from_str(cls, value: str):
-        if not value:
-            return getattr(cls, "_default_value", None)
-        for item in cls:
-            if item.value.lower() == value.lower():
-                return item
-        return getattr(cls, "_default_value", None)
-
-
-class VehicleType(BaseEnum):
-    CAR_TRUCK = 'Car/Track'
-    MOTORCYCLE = 'Motorcycle'
-    POWERSPORT = 'Powersport'
-    RV_CAMPER = 'RV/Camper'
-    TRAILER = 'Trailer'
-    BOAT = 'Boat'
-    COMMERCIAL_INDUSTRIAL = 'Commercial/Industrial'
-    OTHER = 'Other'
-
-    _default_value = CAR_TRUCK
-
-
-class BodyType(BaseEnum):
-    COUPE = 'Coupe'
-    TRUCK = 'Truck'
-    SEDAN = 'Sedan'
-    HATCHBACK = 'Hatchback'
-    SUV = 'SUV'
-    CONVERTIBLE = 'Convertible'
-    WAGON = 'Wagon'
-    MINIVAN = 'Minivan'
-    SMALL_CAR = 'Small Car'
-    OTHER = 'Other'
-
-    _default_value = OTHER
-
-
-class BaseColor(BaseEnum):
-    BLACK = "Black"
-    BLUE = "Blue"
-    BROWN = "Brown"
-    GOLD = "Gold"
-    GREEN = "Green"
-    GRAY = "Gray"
-    PINK = "Pink"
-    PURPLE = "Purple"
-    RED = "Red"
-    SILVER = "Silver"
-    ORANGE = "Orange"
-    WHITE = "White"
-    YELLOW = "Yellow"
-    CHARCOAL = "Charcoal"
-    OFF_WHITE = "Off white"
-    TAN = "Tan"
-    BEIGE = "Beige"
-    BURGUNDY = "Burgundy"
-    TURQUOISE = "Turquoise"
-    OTHER = "Other"
-
-    _default_value = OTHER
-
-
-class FuelType(BaseEnum):
-    DIESEL = "Diesel"
-    ELECTRIC = "Electric"
-    GASOLINE = "Gasoline"
-    FLEX = "Flex"
-    HYBRID = "Hybrid"
-    PETROL = "Petrol"
-    PLUG_IN_HYBRID = "Plug-in hybrid"
-    OTHER = "Other"
-
-    _default_value = OTHER
-
-
-class VehicleCondition(BaseEnum):
-    EXCELLENT = "Excellent"
-    VERY_GOOD = "Very good"
-    GOOD = "Good"
-    FAIR = "Fair"
-    POOR = "Poor"
-
-    _default_value = GOOD
-
-
-class Transmission(BaseEnum):
-    MANUAL = "Manual transmission"
-    AUTOMATIC = "Automatic transmission"
-
-    @classmethod
-    def from_str(cls, value: str):
-        result = super().from_str(value)
-        if result:
-            return result
-        if value.lower() == 'manual':
-            return Transmission.MANUAL
-        if value.lower() == 'automatic':
-            return Transmission.AUTOMATIC
-        return result
-
-
-@dataclasses.dataclass
-class Row:
-    photos_folder: str = ''
-    photos_names: list[str] = None
-    vehicle_type: VehicleType = VehicleType._default_value
-    vehicle_condition: VehicleCondition | None = VehicleCondition._default_value
-    body_type: BodyType = BodyType._default_value
-    year: int | None = None
-    make: str = ''
-    model: str = ''
-    exterior_color: BaseColor = BaseColor._default_value
-    interior_color: BaseColor = BaseColor._default_value
-    mileage: int = 0
-    fuel_type: FuelType = FuelType._default_value
-    transmission: Transmission | None = None
-    price: float = 0.0
-    title: str = ''
-    description: str = ''
-    location: str = ''
-    groups: list[str] = None
-    stockno: str = ''
-    vin: str = ''
-
-    def __getitem__(self, key):
-        return getattr(self, key)
-
-    def __setitem__(self, key, value):
-        setattr(self, key, value)
-
-
-def get_data_from_csv(file_path: str) -> list[Row]:
+def get_data_from_csv(file_path: str = CONFIG['data']['path']) -> list[Listing]:
     rows = []
     with open(file_path, newline="", encoding="utf-8") as file:
         reader = csv.DictReader(file)
         for row_dict in reader:
-            rows.append(Row(
+            if not any(value.strip() for value in row_dict.values() if value):
+                continue
+            rows.append(Listing(
                 photos_folder=row_dict.get('photos_folder', ''),
                 photos_names=row_dict.get('photos_names', '').split(";"),
                 vehicle_type=VehicleType.from_str(row_dict.get('vehicle_type', '')),
@@ -156,7 +28,7 @@ def get_data_from_csv(file_path: str) -> list[Row]:
                 mileage=int(row_dict.get('mileage', '0')),
                 fuel_type=FuelType.from_str(row_dict.get('fuel_type', '')),
                 transmission=Transmission.from_str(row_dict.get('transmission', '')),
-                price=row_dict.get('price', ''),
+                price=float(row_dict.get('price', '')),
                 title=row_dict.get('title', ''),
                 description=row_dict.get('description', ''),
                 location=row_dict.get('location', ''),
@@ -167,7 +39,9 @@ def get_data_from_csv(file_path: str) -> list[Row]:
     return rows
 
 
-def push_data_to_csv(rows: list[Row], file_path: str):
+def push_data_to_csv(rows: list[Listing],
+                     file_path: str = CONFIG['data']['path'],
+                     upload_limit: int = CONFIG['data']['upload_limit']):
     if not rows:
         return
 
@@ -176,7 +50,11 @@ def push_data_to_csv(rows: list[Row], file_path: str):
     with open(file_path, mode="w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
+        i = 0
         for row in rows:
+            if i >= upload_limit:
+                break
+
             data = asdict(row)
             for key, value in data.items():
                 if isinstance(value, Enum):
@@ -184,3 +62,4 @@ def push_data_to_csv(rows: list[Row], file_path: str):
                 elif isinstance(value, list):
                     data[key] = ";".join(value)
             writer.writerow(data)
+            i += 1

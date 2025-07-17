@@ -1,8 +1,11 @@
 data:
   path: csvs/vehicles.csv
+  upload_limit: 2.0
 dealer:
   license_id: 475
   url: https://www.canadasmotors.ca
+listing:
+  lifetime: 8.0
 log:
   system:
     file_path: logs/system.log
@@ -11,6 +14,11 @@ log:
 photos:
   base_folder: photos
 scraper:
-  random_delay:
+  action_random_delay:
     max: 7.2
     min: 0.29
+  listing_random_delay:
+    max: 3600
+    min: 600
+  schedule:
+    crontab: 0 8-20 * * 1-5

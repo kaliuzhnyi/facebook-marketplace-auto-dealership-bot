@@ -10,6 +10,8 @@ from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
@@ -21,13 +23,16 @@ class Scraper:
     # This time is used when we are waiting for element to get loaded in the html
     wait_element_time = 30
 
-    wait_random_time_min = CONFIG['scraper']['random_delay']['min']
-    wait_random_time_max = CONFIG['scraper']['random_delay']['max']
+    action_wait_random_time_min = CONFIG['scraper']['action_random_delay']['min']
+    action_wait_random_time_max = CONFIG['scraper']['action_random_delay']['max']
 
-    # In this folder we will save cookies from logged in users
+    listing_random_delay_min = CONFIG['scraper']['listing_random_delay']['min']
+    listing_random_delay_max = CONFIG['scraper']['listing_random_delay']['max']
+
+    # In this folder we will save cookies from logged-in users
     cookies_folder = 'cookies' + os.path.sep
 
-    def __init__(self, url, driver=None):
+    def __init__(self, url: str, driver: WebDriver | None = None):
         self.url = url
 
         if not driver:
@@ -141,7 +146,7 @@ class Scraper:
 
         cookies_file.close()
 
-    # Check if user is logged in based on a html element that is visible only for logged in users
+    # Check if user is logged in based on a html element that is visible only for logged-in users
     def is_logged_in(self, wait_element_time=None):
         if wait_element_time is None:
             wait_element_time = self.wait_element_time
@@ -151,20 +156,27 @@ class Scraper:
                                  wait_element_time=wait_element_time)
 
     # Wait random amount of seconds before taking some action so the server won't be able to tell if you are a bot
-    def wait_random_time(self):
-        random_sleep_seconds = round(random.uniform(self.wait_random_time_min, self.wait_random_time_max), 2)
+    def wait_action_random_time(self) -> None:
+        self.wait_random_time(self.action_wait_random_time_min, self.action_wait_random_time_max)
 
+    def wait_listing_random_time(self) -> None:
+        self.wait_random_time(self.listing_random_delay_min, self.listing_random_delay_max)
+
+    @classmethod
+    def wait_random_time(cls, min_delay: int, max_delay: int) -> None:
+        random_sleep_seconds = round(random.uniform(min_delay, max_delay), 2)
         time.sleep(random_sleep_seconds)
 
     # Goes to a given page and waits random time before that to prevent detection as a bot
-    def go_to_page(self, page):
+    def go_to_page(self, page: str):
         # Wait random time before refreshing the page to prevent the detection as a bot
-        self.wait_random_time()
+        self.wait_action_random_time()
 
         # Refresh the site url with the loaded cookies so the user will be logged in
         self.driver.get(page)
 
-    def find_element(self, selector, by=By.CSS_SELECTOR, exit_on_missing_element=True, wait_element_time=None):
+    def find_element(self, selector: str, by: str = By.CSS_SELECTOR, exit_on_missing_element: bool = True,
+                     wait_element_time: int | None = None) -> WebElement | None:
         if wait_element_time is None:
             wait_element_time = self.wait_element_time
 
@@ -176,38 +188,44 @@ class Scraper:
             element = WebDriverWait(self.driver, wait_element_time).until(wait_until)
         except:
             if exit_on_missing_element:
-                print('ERROR: Timed out waiting for the element with css selector "' + selector + '" to load')
+                print(f'ERROR: Timed out waiting for the element with {by} "{selector}" to load')
                 # End the program execution because we cannot find the element
                 exit()
             else:
-                return False
+                return None
 
         return element
 
-    def find_element_by_xpath(self, xpath, exit_on_missing_element=True, wait_element_time=None):
-        if wait_element_time is None:
-            wait_element_time = self.wait_element_time
+    def find_element_by_xpath(self, xpath: str, exit_on_missing_element: bool = True,
+                              wait_element_time: int | None = None) -> WebElement | None:
+        return self.find_element(selector=xpath, by=By.XPATH, exit_on_missing_element=exit_on_missing_element,
+                                 wait_element_time=wait_element_time)
 
-        # Initialize the condition to wait
-        wait_until = EC.element_to_be_clickable((By.XPATH, xpath))
+    def find_elements_with_scrolling(self, selector: str, by: str, wait_elements_time: int | None = 10) -> list[
+        WebElement]:
+        if wait_elements_time is None:
+            wait_elements_time = self.wait_element_time
 
-        try:
-            # Wait for element to load
-            element = WebDriverWait(self.driver, wait_element_time).until(wait_until)
-        except:
-            if exit_on_missing_element:
-                # End the program execution because we cannot find the element
-                print('ERROR: Timed out waiting for the element with xpath "' + xpath + '" to load')
-                exit()
-            else:
-                return False
+        wait = WebDriverWait(self.driver, wait_elements_time)
+        scroll_element = self.driver.find_element(By.TAG_NAME, 'body')
 
-        return element
+        while True:
+            elements = self.driver.find_elements(by=by, value=selector)
+            current_elements_count = len(elements)
+
+            scroll_element.send_keys(Keys.END)
+
+            try:
+                wait.until(lambda d: len(d.find_elements(by=by, value=selector)) > current_elements_count)
+            except:
+                break
+
+        return elements
 
     # Wait random time before clicking on the element
     def element_click(self, selector, by=By.CSS_SELECTOR, delay=True, exit_on_missing_element=True):
         if delay:
-            self.wait_random_time()
+            self.wait_action_random_time()
 
         element = self.find_element(selector=selector,
                                     by=by,
@@ -221,7 +239,7 @@ class Scraper:
     # Wait random time before clicking on the element
     def element_click_by_xpath(self, xpath, delay=True, exit_on_missing_element=True):
         if delay:
-            self.wait_random_time()
+            self.wait_action_random_time()
 
         element = self.find_element_by_xpath(xpath, exit_on_missing_element)
 
@@ -233,7 +251,7 @@ class Scraper:
     # Wait random time before sending the keys to the element
     def element_send_keys(self, selector, text, delay=True, exit_on_missing_element=True):
         if delay:
-            self.wait_random_time()
+            self.wait_action_random_time()
 
         element = self.find_element(selector=selector,
                                     exit_on_missing_element=exit_on_missing_element)
@@ -248,7 +266,7 @@ class Scraper:
     # Wait random time before sending the keys to the element
     def element_send_keys_by_xpath(self, xpath, text, delay=True, exit_on_missing_element=True):
         if delay:
-            self.wait_random_time()
+            self.wait_action_random_time()
 
         element = self.find_element_by_xpath(xpath, exit_on_missing_element)
 
@@ -271,7 +289,7 @@ class Scraper:
             # End the program execution because we cannot find the input_file
             exit()
 
-        self.wait_random_time()
+        self.wait_action_random_time()
 
         try:
             input_file.send_keys(files)
@@ -280,18 +298,18 @@ class Scraper:
             exit()
 
     # Wait random time before clearing the element
-    def element_clear(self, selector, delay=True, exit_on_missing_element=True):
+    def element_clear(self, selector: str, delay: bool = True, exit_on_missing_element: bool = True):
         if delay:
-            self.wait_random_time()
+            self.wait_action_random_time()
 
         element = self.find_element(selector=selector,
                                     exit_on_missing_element=exit_on_missing_element)
 
         element.clear()
 
-    def element_delete_text(self, selector, delay=True, exit_on_missing_element=True):
+    def element_delete_text(self, selector: str, delay: bool = True, exit_on_missing_element: bool = True):
         if delay:
-            self.wait_random_time()
+            self.wait_action_random_time()
 
         element = self.find_element(selector=selector,
                                     exit_on_missing_element=exit_on_missing_element)

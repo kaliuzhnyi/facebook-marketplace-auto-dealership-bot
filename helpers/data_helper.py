@@ -6,15 +6,21 @@ from urllib.parse import urljoin
 import requests
 
 from config import CONFIG_DEALER_LICENSE_ID, CONFIG_DEALER_URL, CONFIG_PHOTOS_BASE_FOLDER, CONFIG
-from helpers.csv_helper import Row, push_data_to_csv, BaseColor, FuelType, Transmission, BodyType
+from helpers.csv_helper import push_data_to_csv
+from helpers.model import BodyType, BaseColor, FuelType, Transmission, Listing
+from logger import user_logger
 
 
-def import_data_to_csv(csv_file_name: str):
-    data = import_data_from_website_cams(CONFIG_DEALER_LICENSE_ID)
-    push_data_to_csv(data, csv_file_name)
+def import_data_to_csv(csv_file_name: str = CONFIG['data']['path'],
+                       upload_limit: int = CONFIG['data']['upload_limit']) -> None:
+    user_logger.info('Uploading data from resource - start')
+    data = import_data_from_website_cams(CONFIG_DEALER_LICENSE_ID, upload_limit)
+    user_logger.info(f'Pushing data to csv({csv_file_name}) file')
+    push_data_to_csv(data, csv_file_name, upload_limit)
 
 
-def import_data_from_website_cams(license_id: str) -> list[Row]:
+def import_data_from_website_cams(license_id: str,
+                                  upload_limit: int = CONFIG['data']['upload_limit']) -> list[Listing]:
     result = []
 
     url = urljoin(CONFIG_DEALER_URL, '/php/get_list.php')
@@ -29,7 +35,10 @@ def import_data_from_website_cams(license_id: str) -> list[Row]:
     clear_photos_base_folder(CONFIG_PHOTOS_BASE_FOLDER)
 
     vehicles = response.json()
+    i = 0
     for item in vehicles:
+        if i >= upload_limit:
+            break
         try:
 
             year = int(item['year']) if item.get('year') and str(item['year']).isdigit() else None
@@ -47,7 +56,7 @@ def import_data_from_website_cams(license_id: str) -> list[Row]:
             if stockno:
                 photos_folder = os.path.join(photos_folder, stockno)
 
-            row = Row(
+            row = Listing(
                 body_type=BodyType.from_str(str(item.get('body_type') or item.get('product', '')).strip()),
                 year=year,
                 make=make,
@@ -61,7 +70,7 @@ def import_data_from_website_cams(license_id: str) -> list[Row]:
                 title=f"{year or ''} {make} {model}".strip(),
                 description=str(item.get('online_description', '')).strip(),
                 location=f"{item.get('city', '').strip()}, {item.get('province', '').strip()}",
-                groups=['default'],
+                groups=[],
                 stockno=stockno,
                 vin=item.get('vin', '').strip(),
                 photos_folder=photos_folder
@@ -73,9 +82,11 @@ def import_data_from_website_cams(license_id: str) -> list[Row]:
                                                        license_id=license_id)
 
             result.append(row)
+            i += 1
         except Exception as e:
             print(f"Error to processing stockno={item.get('stockno')}: {e}")
-        break
+
+    user_logger.info(f'Successfully uploaded from resource {i} listings')
     return result
 
 
