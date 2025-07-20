@@ -1,92 +1,96 @@
-[2025-06-24 22:46:57] INFO: Selenium browser launched
-[2025-06-24 22:58:16] INFO: Selenium browser launched
-[2025-06-24 23:02:52] INFO: Selenium browser launched
-[2025-06-24 23:04:53] INFO: Selenium browser launched
-[2025-06-24 23:07:07] INFO: Selenium browser launched
-[2025-06-24 23:07:20] INFO: Selenium browser launched
-[2025-06-24 23:07:32] INFO: Selenium browser launched
-[2025-06-24 23:09:41] INFO: Selenium browser launched
-[2025-06-24 23:17:29] INFO: Selenium browser launched
-[2025-06-24 23:17:32] DEBUG: Starting Facebook bot thread
-[2025-06-24 23:24:38] INFO: Selenium browser launched
-[2025-06-24 23:24:56] DEBUG: Starting Facebook bot thread
-[2025-06-24 23:30:29] INFO: Selenium browser launched
-[2025-06-24 23:30:42] INFO: Selenium browser launched
-[2025-06-24 23:30:44] DEBUG: Starting Facebook bot thread
-[2025-06-24 23:31:14] INFO: Selenium browser launched
-[2025-06-24 23:31:16] DEBUG: Starting Facebook bot thread
-[2025-06-24 23:33:23] INFO: Selenium browser launched
-[2025-06-24 23:33:25] DEBUG: Starting Facebook bot thread
-[2025-06-24 23:38:43] INFO: Selenium browser launched
-[2025-06-24 23:38:45] DEBUG: Starting Facebook bot thread
-[2025-06-24 23:49:56] INFO: Selenium browser launched
-[2025-06-24 23:49:58] DEBUG: Starting Facebook bot thread
-[2025-06-24 23:55:00] INFO: Selenium browser launched
-[2025-06-24 23:55:01] DEBUG: Starting Facebook bot thread
-[2025-06-24 23:56:27] INFO: Selenium browser launched
-[2025-06-24 23:56:29] DEBUG: Starting Facebook bot thread
-[2025-06-25 00:11:10] INFO: Selenium browser launched
-[2025-06-25 00:11:11] DEBUG: Starting Facebook bot thread
-[2025-06-25 00:11:33] INFO: Selenium browser launched
-[2025-06-25 00:11:34] DEBUG: Starting Facebook bot thread
-[2025-06-25 00:23:42] INFO: Selenium browser launched
-[2025-06-25 00:23:44] DEBUG: Starting Facebook bot thread
-[2025-06-25 00:24:16] INFO: Selenium browser launched
-[2025-06-25 00:24:17] DEBUG: Starting Facebook bot thread
-[2025-06-25 00:29:23] INFO: Selenium browser launched
-[2025-06-25 00:29:25] DEBUG: Starting Facebook bot thread
-[2025-06-25 00:29:59] INFO: Selenium browser launched
-[2025-06-25 00:30:01] DEBUG: Starting Facebook bot thread
-[2025-06-25 00:31:24] INFO: Selenium browser launched
-[2025-06-25 00:31:25] DEBUG: Starting Facebook bot thread
-[2025-06-25 00:32:43] INFO: Selenium browser launched
-[2025-06-25 00:32:45] DEBUG: Starting Facebook bot thread
-[2025-06-25 00:33:10] DEBUG: Starting Facebook bot thread
-[2025-06-25 00:33:33] INFO: Selenium browser launched
-[2025-06-25 00:33:36] DEBUG: Starting Facebook bot thread
-[2025-06-25 00:33:55] INFO: Selenium browser launched
-[2025-06-25 00:33:56] DEBUG: Starting Facebook bot thread
-[2025-06-25 00:36:33] INFO: Selenium browser launched
-[2025-06-25 00:36:35] DEBUG: Starting Facebook bot thread
-[2025-06-25 00:38:09] INFO: Selenium browser launched
-[2025-06-25 00:38:11] DEBUG: Starting Facebook bot thread
-[2025-06-25 00:39:19] INFO: Selenium browser launched
-[2025-06-25 00:39:21] DEBUG: Starting Facebook bot thread
-[2025-06-25 00:42:24] INFO: Selenium browser launched
-[2025-06-25 00:42:26] DEBUG: Starting Facebook bot thread
-[2025-07-16 23:02:54] INFO: Start program
-[2025-07-16 23:02:54] INFO: Build program UI - start
-[2025-07-16 23:02:54] INFO: Build program UI - end
-[2025-07-16 23:02:54] INFO: Run browser with program UI
-[2025-07-16 23:03:54] INFO: Start program
-[2025-07-16 23:03:54] INFO: Build program UI - start
-[2025-07-16 23:03:54] INFO: Build program UI - end
-[2025-07-16 23:03:54] INFO: Run browser with program UI
-[2025-07-16 23:04:28] INFO: Start program
-[2025-07-16 23:04:28] INFO: Build program UI - start
-[2025-07-16 23:04:28] INFO: Build program UI - end
-[2025-07-16 23:04:28] INFO: Run browser with program UI
-[2025-07-16 23:07:22] INFO: Start program
-[2025-07-16 23:07:22] INFO: Build program UI - start
-[2025-07-16 23:07:22] INFO: Build program UI - end
-[2025-07-16 23:07:22] INFO: Run browser with program UI
-[2025-07-16 23:11:23] INFO: Start program
-[2025-07-16 23:11:23] INFO: Build program UI - start
-[2025-07-16 23:11:24] INFO: Build program UI - end
-[2025-07-16 23:11:24] INFO: Run browser with program UI
-[2025-07-16 23:13:54] INFO: Start program
-[2025-07-16 23:13:54] INFO: Build program UI - start
-[2025-07-16 23:13:54] INFO: Build program UI - end
-[2025-07-16 23:13:54] INFO: Run browser with program UI
-[2025-07-16 23:22:04] INFO: Start program
-[2025-07-16 23:22:04] INFO: Build program UI - start
-[2025-07-16 23:22:04] INFO: Build program UI - end
-[2025-07-16 23:22:04] INFO: Run browser with program UI
-[2025-07-16 23:24:45] INFO: Start program
-[2025-07-16 23:24:45] INFO: Build program UI - start
-[2025-07-16 23:24:45] INFO: Build program UI - end
-[2025-07-16 23:24:45] INFO: Run browser with program UI
-[2025-07-16 23:44:09] INFO: Start program
-[2025-07-16 23:44:09] INFO: Build program UI - start
-[2025-07-16 23:44:09] INFO: Build program UI - end
-[2025-07-16 23:44:09] INFO: Run browser with program UI
+[2025-07-18 07:25:07] INFO: Start program
+[2025-07-18 07:25:07] INFO: Build program UI - start
+[2025-07-18 07:25:07] INFO: Build program UI - end
+[2025-07-18 07:25:07] INFO: Run browser with program UI
+[2025-07-18 07:27:48] INFO: Start program
+[2025-07-18 07:27:48] INFO: Build program UI - start
+[2025-07-18 07:27:48] INFO: Build program UI - end
+[2025-07-18 07:27:48] INFO: Run browser with program UI
+[2025-07-18 22:07:54] INFO: Start program
+[2025-07-18 22:07:54] INFO: Build program UI - start
+[2025-07-18 22:07:54] INFO: Build program UI - end
+[2025-07-18 22:07:54] INFO: Run browser with program UI
+[2025-07-18 22:13:08] INFO: Start program
+[2025-07-18 22:13:08] INFO: Build program UI - start
+[2025-07-18 22:13:08] INFO: Build program UI - end
+[2025-07-18 22:13:08] INFO: Run browser with program UI
+[2025-07-18 22:15:32] INFO: Start program
+[2025-07-18 22:15:32] INFO: Build program UI - start
+[2025-07-18 22:15:32] INFO: Build program UI - end
+[2025-07-18 22:15:32] INFO: Run browser with program UI
+[2025-07-18 22:25:05] INFO: Start program
+[2025-07-18 22:25:05] INFO: Build program UI - start
+[2025-07-18 22:25:05] INFO: Build program UI - end
+[2025-07-18 22:25:05] INFO: Run browser with program UI
+[2025-07-18 22:25:46] INFO: Start program
+[2025-07-18 22:25:46] INFO: Build program UI - start
+[2025-07-18 22:25:46] INFO: Build program UI - end
+[2025-07-18 22:25:46] INFO: Run browser with program UI
+[2025-07-18 22:26:12] INFO: Start program
+[2025-07-18 22:26:12] INFO: Build program UI - start
+[2025-07-18 22:26:12] INFO: Build program UI - end
+[2025-07-18 22:26:12] INFO: Run browser with program UI
+[2025-07-18 22:28:17] INFO: Start program
+[2025-07-18 22:28:17] INFO: Build program UI - start
+[2025-07-18 22:28:17] INFO: Build program UI - end
+[2025-07-18 22:28:17] INFO: Run browser with program UI
+[2025-07-18 22:28:53] INFO: Start program
+[2025-07-18 22:28:53] INFO: Build program UI - start
+[2025-07-18 22:28:53] INFO: Build program UI - end
+[2025-07-18 22:28:53] INFO: Run browser with program UI
+[2025-07-18 22:31:52] INFO: Start program
+[2025-07-18 22:31:52] INFO: Build program UI - start
+[2025-07-18 22:31:52] INFO: Build program UI - end
+[2025-07-18 22:31:52] INFO: Run browser with program UI
+[2025-07-18 22:33:57] INFO: Start program
+[2025-07-18 22:33:57] INFO: Build program UI - start
+[2025-07-18 22:33:57] INFO: Build program UI - end
+[2025-07-18 22:33:57] INFO: Run browser with program UI
+[2025-07-18 22:35:57] INFO: Start program
+[2025-07-18 22:35:57] INFO: Build program UI - start
+[2025-07-18 22:35:57] INFO: Build program UI - end
+[2025-07-18 22:35:57] INFO: Run browser with program UI
+[2025-07-20 10:16:53] INFO: Start program
+[2025-07-20 10:16:53] INFO: Build program UI - start
+[2025-07-20 10:16:53] INFO: Build program UI - end
+[2025-07-20 10:16:53] INFO: Run browser with program UI
+[2025-07-20 10:17:52] INFO: Start program
+[2025-07-20 10:17:52] INFO: Build program UI - start
+[2025-07-20 10:17:52] INFO: Build program UI - end
+[2025-07-20 10:17:52] INFO: Run browser with program UI
+[2025-07-20 15:00:02] INFO: Start program
+[2025-07-20 15:00:02] INFO: Build program UI - start
+[2025-07-20 15:00:02] INFO: Build program UI - end
+[2025-07-20 15:00:02] INFO: Run browser with program UI
+[2025-07-20 15:01:42] INFO: Start program
+[2025-07-20 15:01:42] INFO: Build program UI - start
+[2025-07-20 15:01:42] INFO: Build program UI - end
+[2025-07-20 15:01:42] INFO: Run browser with program UI
+[2025-07-20 15:02:25] INFO: Start program
+[2025-07-20 15:02:25] INFO: Build program UI - start
+[2025-07-20 15:02:25] INFO: Build program UI - end
+[2025-07-20 15:02:25] INFO: Run browser with program UI
+[2025-07-20 15:03:46] INFO: Start program
+[2025-07-20 15:03:46] INFO: Build program UI - start
+[2025-07-20 15:03:46] INFO: Build program UI - end
+[2025-07-20 15:03:46] INFO: Run browser with program UI
+[2025-07-20 15:05:17] INFO: Start program
+[2025-07-20 15:05:17] INFO: Build program UI - start
+[2025-07-20 15:05:17] INFO: Build program UI - end
+[2025-07-20 15:05:17] INFO: Run browser with program UI
+[2025-07-20 15:07:59] INFO: Start program
+[2025-07-20 15:07:59] INFO: Build program UI - start
+[2025-07-20 15:07:59] INFO: Build program UI - end
+[2025-07-20 15:07:59] INFO: Run browser with program UI
+[2025-07-20 15:09:46] INFO: Start program
+[2025-07-20 15:09:46] INFO: Build program UI - start
+[2025-07-20 15:09:46] INFO: Build program UI - end
+[2025-07-20 15:09:46] INFO: Run browser with program UI
+[2025-07-20 15:10:18] INFO: Start program
+[2025-07-20 15:10:18] INFO: Build program UI - start
+[2025-07-20 15:10:18] INFO: Build program UI - end
+[2025-07-20 15:10:18] INFO: Run browser with program UI
+[2025-07-20 15:10:59] INFO: Start program
+[2025-07-20 15:10:59] INFO: Build program UI - start
+[2025-07-20 15:10:59] INFO: Build program UI - end
+[2025-07-20 15:10:59] INFO: Run browser with program UI

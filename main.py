@@ -94,6 +94,8 @@ def launch_facebook_marketplace_bot():
         CONFIG['scraper']['listing_random_delay']['max'] = config_field_listing_random_delay_max.value
         CONFIG['scraper']['schedule']['crontab'] = config_field_scraper_schedule_crontab.value
         CONFIG['listing']['lifetime'] = config_field_listing_lifetime.value
+        CONFIG['listing']['description']['replace']['old_value'] = config_listing_description_replace_old_value.value
+        CONFIG['listing']['description']['replace']['new_value'] = config_listing_description_replace_new_value.value
         CONFIG['data']['path'] = config_field_data_path.value
         CONFIG['data']['upload_limit'] = config_field_data_upload_limit.value
         save_config()
@@ -141,53 +143,72 @@ def launch_facebook_marketplace_bot():
 
         with ui.expansion('Config').classes('w-full'):
             with ui.row():
-                ui.button(text="Save",
-                          on_click=on_save_config_button_click)
-            with ui.row().classes('w-full items-start'):
-                with ui.column():
-                    ui.label('Scaper')
-                    ui.markdown('Action delay')
-                    config_field_action_random_delay_min = (
-                        ui.number(
-                            label='Random delay, min (seconds)',
-                            value=CONFIG['scraper']['action_random_delay']['min'],
-                            format='%.2f')
-                        .tooltip('Min value of random delay between actions'))
-                    config_field_action_random_delay_max = (
-                        ui.number(
-                            label='Random delay, max (seconds)',
-                            value=CONFIG['scraper']['action_random_delay']['max'],
-                            format='%.2f')
-                        .tooltip('Max value of random delay between actions'))
-                    ui.markdown('Listing delay')
-                    config_field_listing_random_delay_min = (
-                        ui.number(
-                            label='Random delay, min (seconds)',
-                            value=CONFIG['scraper']['listing_random_delay']['min'],
-                            format='%.2f')
-                        .tooltip('Min value of random delay between listing'))
-                    config_field_listing_random_delay_max = (
-                        ui.number(
-                            label='Random delay, max (seconds)',
-                            value=CONFIG['scraper']['listing_random_delay']['max'],
-                            format='%.2f')
-                        .tooltip('Max value of random delay between listing'))
+                ui.button(text="Save", on_click=on_save_config_button_click)
+            with ui.tabs().classes('w-full') as tabs:
+                tab_panel_scraper = ui.tab('Scaper')
+                tab_panel_listings = ui.tab('Listings')
+                tab_panel_data = ui.tab('Data')
 
-                with ui.column():
-                    ui.label('Listings')
-                    config_field_listing_lifetime = (
-                        ui.number(label='Lifetime (days)', value=CONFIG['listing']['lifetime'])
-                        .props('step=1 min=1')
-                        .tooltip(text='After this time, the listing will be removed and republished.'))
-                    config_field_scraper_schedule_crontab = (
-                        ui.input(label='Schedule (crontab)', value=CONFIG['scraper']['schedule']['crontab'])
-                        .props('clearable')
-                        .tooltip(text='Schedule to run job with listing publishing.\n'
-                                      'https://en.wikipedia.org/wiki/Cron\n'
-                                      'https://crontab.guru/'))
+            with ui.tab_panels(tabs, value=tab_panel_scraper).classes('w-full'):
+                with ui.tab_panel(tab_panel_scraper):
+                    with ui.row().classes('w-full no-wrap'):
+                        with ui.column().classes('w-1/3'):
+                            ui.markdown('Action delay')
+                            config_field_action_random_delay_min = (
+                                ui.number(
+                                    label='Random delay, min (seconds)',
+                                    value=CONFIG['scraper']['action_random_delay']['min'],
+                                    format='%.2f')
+                                .tooltip('Min value of random delay between actions'))
+                            config_field_action_random_delay_max = (
+                                ui.number(
+                                    label='Random delay, max (seconds)',
+                                    value=CONFIG['scraper']['action_random_delay']['max'],
+                                    format='%.2f')
+                                .tooltip('Max value of random delay between actions'))
+                        with ui.column().classes('w-1/3'):
+                            ui.markdown('Listing delay')
+                            config_field_listing_random_delay_min = (
+                                ui.number(
+                                    label='Random delay, min (seconds)',
+                                    value=CONFIG['scraper']['listing_random_delay']['min'],
+                                    format='%.2f')
+                                .tooltip('Min value of random delay between listing'))
+                            config_field_listing_random_delay_max = (
+                                ui.number(
+                                    label='Random delay, max (seconds)',
+                                    value=CONFIG['scraper']['listing_random_delay']['max'],
+                                    format='%.2f')
+                                .tooltip('Max value of random delay between listing'))
 
-                with ui.column():
-                    ui.label('Data')
+                with ui.tab_panel(tab_panel_listings):
+                    with ui.row().classes('w-full no-wrap'):
+                        with ui.column().classes('w-1/3'):
+                            ui.markdown('General')
+                            config_field_listing_lifetime = (
+                                ui.number(label='Lifetime (days)', value=CONFIG['listing']['lifetime'])
+                                .props('step=1 min=1')
+                                .tooltip(text='After this time, the listing will be removed and republished.'))
+                            config_field_scraper_schedule_crontab = (
+                                ui.input(label='Schedule (crontab)', value=CONFIG['scraper']['schedule']['crontab'])
+                                .props('clearable')
+                                .tooltip(text='Schedule to run job with listing publishing. More info: '
+                                              'https://en.wikipedia.org/wiki/Cron and '
+                                              'https://crontab.guru/'))
+                        with ui.column().classes('w-2/3'):
+                            ui.markdown('Description')
+                            config_listing_description_replace_old_value = (
+                                ui.textarea(label='Old value',
+                                            value=CONFIG['listing']['description']['replace']['old_value'])
+                                .tooltip(text='This value will be removed from listing description')
+                                .classes('w-full h-1/4'))
+                            config_listing_description_replace_new_value = (
+                                ui.textarea(label='New value',
+                                            value=CONFIG['listing']['description']['replace']['new_value'])
+                                .tooltip(text='This value will be insert to listing description instead old value')
+                                .classes('w-full h-1/4'))
+
+                with ui.tab_panel(tab_panel_data):
                     config_field_data_path = (
                         ui.input(label='Path', value=CONFIG['data']['path'])
                         .props('clearable')
@@ -195,7 +216,7 @@ def launch_facebook_marketplace_bot():
                     config_field_data_upload_limit = (
                         ui.number(label='Upload limit', value=CONFIG['data']['upload_limit'])
                         .props('step=1 min=1')
-                        .tooltip(text='Limit of listings which should be in file or'
+                        .tooltip(text='Limit of listings which should be in file or '
                                       'which should be uploaded'))
 
         with ui.expansion('Log').classes('w-full'):
@@ -210,7 +231,7 @@ def launch_facebook_marketplace_bot():
 
             log_area = (ui.textarea(label='Log Output', value='')
                         .props('readonly')
-                        .style('width: 100%; height: 300px;'))
+                        .style('width: 100%; height: 100%;'))
 
     system_logger.info('Build program UI - end')
 

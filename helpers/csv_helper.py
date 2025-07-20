@@ -5,6 +5,7 @@ from enum import Enum
 
 from config import CONFIG
 from helpers.model import VehicleType, BodyType, BaseColor, FuelType, VehicleCondition, Transmission, Listing
+from logger import user_logger
 
 
 def get_data_from_csv(file_path: str = CONFIG['data']['path']) -> list[Listing]:
@@ -43,6 +44,7 @@ def push_data_to_csv(rows: list[Listing],
                      file_path: str = CONFIG['data']['path'],
                      upload_limit: int = CONFIG['data']['upload_limit']):
     if not rows:
+        user_logger.warning('No inventory to push in csv file')
         return
 
     fieldnames = [f.name for f in dataclasses.fields(rows[0])]
@@ -61,5 +63,10 @@ def push_data_to_csv(rows: list[Listing],
                     data[key] = value.value
                 elif isinstance(value, list):
                     data[key] = ";".join(value)
+
             writer.writerow(data)
             i += 1
+            user_logger.info(f'Successfully pushed inventory to csv file: '
+                             f'{row.year} {row.make} {row.model} (stock #{row.stockno})')
+
+    user_logger.info(f'Successfully pushed inventory to csv file {i} inventories')

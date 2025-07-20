@@ -54,8 +54,9 @@ def check_and_remove_listings(scraper: Scraper,
     for published_listing in published_listings:
         # Check conditions when listing should be removed
 
-        # Title condition
-        title_missing = not any(published_listing.title.lower() == l.title.lower() for l in listings)
+        # Try to find listing in database, if not present the listing should be removed
+        # because it is not actual anymore
+        is_not_present = not any(compare_title(published_listing.title, l.title) for l in listings)
 
         # Published date condition
         is_expired = (
@@ -64,25 +65,25 @@ def check_and_remove_listings(scraper: Scraper,
         )
 
         # Remove the listing if it needed
-        if title_missing or is_expired:
+        if is_not_present or is_expired:
             remove_published_listing(scraper=scraper, published_listing=published_listing)
 
 
 def find_all_published_listing_elements(scraper: Scraper) -> list[WebElement]:
-    scraper.go_to_page('https://facebook.com/marketplace/you/selling')
+    # Check the page and if it wrong page try go to correct page
+    container_element_selector = "//div[translate(@aria-label, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'collection of your marketplace items']"
+    container_element = scraper.find_element_by_xpath(container_element_selector)
+    if not container_element:
+        scraper.go_to_page("https://facebook.com/marketplace/you/selling")
 
     # Find and get all published listings
-    element_selector = '//div[@aria-label="Collection of your marketplace items"]/div/div/div[2]/div[1]/div/div[2]/div/div/span/div/div/div'
-    elements = scraper.find_elements_with_scrolling(
-        by=By.XPATH,
-        selector=element_selector
-    )
-
+    element_selector = f"{container_element_selector}/div/div/div[2]/div[1]/div/div[2]/div/div/span/div/div/div"
+    elements = scraper.find_elements_with_scrolling(by=By.XPATH, selector=element_selector)
     return elements
 
 
-def get_all_published_listings(scraper: Scraper, published_listing_elements: list[WebElement]) -> list[
-    PublishedListing]:
+def get_all_published_listings(scraper: Scraper,
+                               published_listing_elements: list[WebElement]) -> list[PublishedListing]:
     result = []
 
     for element in published_listing_elements:
@@ -93,9 +94,7 @@ def get_all_published_listings(scraper: Scraper, published_listing_elements: lis
 
 
 def find_published_listing_element(scraper: Scraper, listing_title: str) -> WebElement | None:
-    return find_listing_by_title(
-        scraper=scraper,
-        title=listing_title)
+    return find_listing_by_title(scraper=scraper, title=listing_title)
 
 
 def get_published_listing(scraper: Scraper,
@@ -292,9 +291,18 @@ def publish_listing(data: Listing, scraper: Scraper):
         scraper.element_send_keys_by_xpath('//span[text()="Price"]/following-sibling::input[1]', int(data.price))
 
     if data.description:
-        scraper.scroll_to_element_by_xpath('//span[text()="Description"]/following-sibling::div/textarea')
-        scraper.element_send_keys_by_xpath('//span[text()="Description"]/following-sibling::div/textarea',
-                                           data.description)
+        description = data.description
+        if CONFIG['listing']['description']['replace']['old_value']:
+            description = description.replace(
+                CONFIG['listing']['description']['replace']['old_value'],
+                CONFIG['listing']['description']['replace']['new_value']
+            )
+        else:
+            description = f"{description}{CONFIG['listing']['description']['replace']['old_value']}"
+
+        scraper.scroll_to_element_by_xpath(xpath='//span[text()="Description"]/following-sibling::div/textarea')
+        scraper.element_send_keys_by_xpath(xpath='//span[text()="Description"]/following-sibling::div/textarea',
+                                           text=description)
 
     if data.location:
         scraper.scroll_to_element_by_xpath('//span[text()="Location"]/following-sibling::input[1]')
@@ -515,8 +523,7 @@ def post_listing_to_multiple_groups(data: Listing, listing_type, scraper):
 def find_listing_by_title(scraper: Scraper, title: str) -> WebElement | None:
     # Find and check search input field
     search_input_selector = 'input[placeholder="Search your listings"]'
-    search_input = scraper.find_element(selector=search_input_selector,
-                                        exit_on_missing_element=False)
+    search_input = scraper.find_element(selector=search_input_selector, exit_on_missing_element=False)
     if not search_input:
         return None
 
@@ -524,8 +531,7 @@ def find_listing_by_title(scraper: Scraper, title: str) -> WebElement | None:
     scraper.element_delete_text(search_input_selector)
 
     # Enter the title of the listing in the input for search
-    scraper.element_send_keys(selector=search_input_selector,
-                              text=title)
+    scraper.element_send_keys(selector=search_input_selector, text=title)
 
     return scraper.find_element_by_xpath(
         xpath=f'//span[translate(text(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "{title.lower()}"]',
@@ -539,6 +545,7 @@ def wait_until_listing_is_published(listing_type, scraper):
     elif listing_type == 'vehicle':
         scraper.element_wait_to_be_invisible_by_xpath('//h1[text()="Vehicle for sale"]')
 
+
 def normalize_text_for_compare(text: str) -> str:
     if text is None:
         return ''
@@ -548,5 +555,16 @@ def normalize_text_for_compare(text: str) -> str:
     text = re.sub(r'\s+', ' ', text)
     return text.strip().lower()
 
+
+def normalize_title_for_compare(text: str) -> str:
+    text = normalize_text_for_compare(text)
+    text = text.replace(' ', '')
+    return text
+
+
 def compare_text(text1: str, text2: str) -> bool:
     return normalize_text_for_compare(text1) == normalize_text_for_compare(text2)
+
+
+def compare_title(text1: str, text2: str) -> bool:
+    return normalize_title_for_compare(text1) == normalize_title_for_compare(text2)

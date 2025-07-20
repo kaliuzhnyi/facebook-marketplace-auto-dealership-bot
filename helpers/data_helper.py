@@ -81,12 +81,16 @@ def import_data_from_website_cams(license_id: str,
                                                        photos_folder=row.photos_folder,
                                                        license_id=license_id)
 
+        except Exception as e:
+            user_logger.error(f'Error to processing inventory (stockno #{item.get("stockno")}): {e}')
+        else:
             result.append(row)
             i += 1
-        except Exception as e:
-            print(f"Error to processing stockno={item.get('stockno')}: {e}")
 
-    user_logger.info(f'Successfully uploaded from resource {i} listings')
+            user_logger.info(f'Successfully upload inventory: '
+                             f'{row.year} {row.make} {row.model} (stock #{row.stockno})')
+
+    user_logger.info(f'Successfully uploaded from resource {i} inventories')
     return result
 
 

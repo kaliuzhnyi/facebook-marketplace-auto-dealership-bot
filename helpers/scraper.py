@@ -6,6 +6,7 @@ import time
 from selenium import webdriver
 from selenium.common.exceptions import ElementClickInterceptedException
 from selenium.common.exceptions import InvalidArgumentException
+from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
@@ -164,8 +165,15 @@ class Scraper:
 
     @classmethod
     def wait_random_time(cls, min_delay: int, max_delay: int) -> None:
-        random_sleep_seconds = round(random.uniform(min_delay, max_delay), 2)
+        random_sleep_seconds = cls.get_random_delay(min_delay, max_delay)
         time.sleep(random_sleep_seconds)
+
+    def get_action_random_delay(self):
+        return self.get_random_delay(self.action_wait_random_time_min, self.action_wait_random_time_max)
+
+    @classmethod
+    def get_random_delay(cls, min_delay: int, max_delay: int) -> int:
+        return int(round(random.uniform(min_delay, max_delay), 2))
 
     # Goes to a given page and waits random time before that to prevent detection as a bot
     def go_to_page(self, page: str):
@@ -223,15 +231,22 @@ class Scraper:
         return elements
 
     # Wait random time before clicking on the element
-    def element_click(self, selector, by=By.CSS_SELECTOR, delay=True, exit_on_missing_element=True):
-        if delay:
-            self.wait_action_random_time()
+    def element_click(self, selector,
+                      by=By.CSS_SELECTOR,
+                      delay=True,
+                      exit_on_missing_element=True,
+                      use_cursor=False):
 
-        element = self.find_element(selector=selector,
-                                    by=by,
-                                    exit_on_missing_element=exit_on_missing_element)
+        element = self.find_element(selector=selector, by=by, exit_on_missing_element=exit_on_missing_element)
 
         try:
+            if use_cursor:
+                actions = ActionChains(self.driver)
+                actions.move_to_element(element).pause(self.get_action_random_delay()).click().perform()
+            else:
+                if delay:
+                    self.wait_action_random_time()
+                element.click()
             element.click()
         except ElementClickInterceptedException:
             self.driver.execute_script("arguments[0].click();", element)

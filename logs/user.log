@@ -1,23 +1,32 @@
-[22:34:37] Start program
-[22:42:01] Start program
-[22:42:12] Start program
-[22:42:31] Start program
-[22:42:47] Start program
-[22:43:33] Start program
-[23:11:27] Uploading data from resource - start
-[23:11:33] Successfully uploaded from resource 1 listings
-[23:11:34] Successfully uploaded from resource 2 listings
-[23:11:35] Successfully uploaded from resource 3 listings
-[23:11:36] Successfully uploaded from resource 4 listings
-[23:11:37] Successfully uploaded from resource 5 listings
-[23:11:38] Successfully uploaded from resource 6 listings
-[23:11:38] Successfully uploaded from resource 7 listings
-[23:11:40] Successfully uploaded from resource 8 listings
-[23:11:41] Successfully uploaded from resource 9 listings
-[23:11:44] Pushing data to csv(csvs/vehicles.csv) file
-[23:14:06] Uploading data from resource - start
-[23:14:07] Successfully uploaded from resource 2 listings
-[23:14:07] Pushing data to csv(csvs/vehicles.csv) file
-[23:22:04] Start program
-[23:24:45] Start program
-[23:44:09] Start program
+[07:28:50] Uploading data from resource - start
+[07:28:51] Successfully upload inventory: 2016 AUDI Q5 * AWD * NO ACCIDENTS (stock #P3289)
+[07:28:51] Successfully upload inventory: 2019 HYUNDAI SONATA * LOW FINANCE PAYMENTS * GREAT DEAL (stock #T3288)
+[07:28:51] Successfully uploaded from resource 2 inventories
+[07:28:51] Pushing data to csv(csvs/vehicles.csv) file
+[07:28:51] Successfully pushed inventory to csv file: 2016 AUDI Q5 * AWD * NO ACCIDENTS (stock #P3289)
+[07:28:51] Successfully pushed inventory to csv file: 2019 HYUNDAI SONATA * LOW FINANCE PAYMENTS * GREAT DEAL (stock #T3288)
+[07:28:51] Successfully pushed inventory to csv file 2 inventories
+[07:25:07] Start program
+[07:27:48] Start program
+[22:07:54] Start program
+[22:13:08] Start program
+[22:15:32] Start program
+[22:25:05] Start program
+[22:25:46] Start program
+[22:26:12] Start program
+[22:28:17] Start program
+[22:28:53] Start program
+[22:31:52] Start program
+[22:33:57] Start program
+[22:35:57] Start program
+[10:16:53] Start program
+[10:17:52] Start program
+[15:00:02] Start program
+[15:01:42] Start program
+[15:02:25] Start program
+[15:03:46] Start program
+[15:05:17] Start program
+[15:07:59] Start program
+[15:09:46] Start program
+[15:10:18] Start program
+[15:10:59] Start program
