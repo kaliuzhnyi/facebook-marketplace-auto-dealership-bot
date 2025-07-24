@@ -529,6 +529,7 @@ def add_listing_to_multiple_groups(data: Listing, scraper: Scraper):
 
 
 def post_listing_to_multiple_groups(listing: Listing, scraper: Scraper):
+
     # Create an array for group names by splitting the string by this symbol ";"
     group_names = define_groups_for_posting(listing)
     if not group_names:
@@ -639,13 +640,27 @@ def post_listing_to_multiple_groups(listing: Listing, scraper: Scraper):
         scraper.find_element_by_xpath('//span[text()="Shared to your group."]', False, 10)
 
 
-def define_groups_for_posting(data: Listing) -> list[str]:
-    group_names = data.groups.copy()
+def define_groups_for_posting(listing: Listing) -> list[str]:
+
+    # Define groups for posting from listing
+    # These groups may be unique for each listing
+    group_names = listing.groups.copy()
+
+    # Define groups for posting from settings
+    # These groups are the same for all listings
     group_names_from_config = CONFIG['listing']['public_groups']
     if group_names_from_config:
         group_names_from_config = [g.strip() for g in group_names_from_config.split(';')]
         group_names.extend(group_names_from_config)
-    return group_names
+
+    # Clean group names
+    cleaned_group_names = []
+    for name in group_names:
+        clean = re.sub(r'[^\w\s\-]', '', name, flags=re.UNICODE).strip()
+        if clean:
+            cleaned_group_names.append(clean)
+
+    return cleaned_group_names
 
 
 def find_listing_by_title(scraper: Scraper, title: str) -> WebElement | None:
