@@ -322,11 +322,13 @@ class Scraper:
 
         element.clear()
 
-    def element_delete_text(self, selector: str, delay: bool = True, exit_on_missing_element: bool = True):
+    def element_delete_text(self, selector: str, by: str = By.CSS_SELECTOR, delay: bool = True,
+                            exit_on_missing_element: bool = True):
         if delay:
             self.wait_action_random_time()
 
         element = self.find_element(selector=selector,
+                                    by=by,
                                     exit_on_missing_element=exit_on_missing_element)
 
         # Select all of the text in the input
@@ -334,8 +336,8 @@ class Scraper:
         # Remove the selected text with backspace
         element.send_keys(Keys.BACK_SPACE)
 
-    def element_wait_to_be_invisible(self, selector):
-        wait_until = EC.invisibility_of_element_located((By.CSS_SELECTOR, selector))
+    def element_wait_to_be_invisible(self, selector: str, by: str = By.CSS_SELECTOR) -> None:
+        wait_until = EC.invisibility_of_element_located((by, selector))
 
         try:
             WebDriverWait(self.driver, self.wait_element_time).until(wait_until)

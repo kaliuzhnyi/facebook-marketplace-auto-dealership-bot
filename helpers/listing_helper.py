@@ -398,20 +398,6 @@ def publish_listing(data: Listing, scraper: Scraper):
     scraper.go_to_page(PAGES['selling'])
     return True
 
-    # #
-    # leave_page_selector = '//div[@tabindex="0"] //span[text()="Leave Page"]'
-    # leave_page = scraper.find_element_by_xpath(leave_page_selector, False, 15)
-    # if leave_page:
-    #     scraper.element_click_by_xpath(leave_page_selector)
-    #
-    # # Wait until the listing is published
-    # wait_until_listing_is_published(listing_type, scraper)
-    #
-    # if not next_button:
-    #     post_listing_to_multiple_groups(listing=data, scraper=scraper)
-    #
-    # return True
-
 
 def generate_multiple_images_path(path, images):
     # Last character must be '/' because after that we are adding the name of the image
@@ -506,15 +492,9 @@ def add_fields_for_item(data, scraper):
         scraper.element_send_keys_by_xpath('//span[text()="Brand"]/following-sibling::input[1]', data['Brand'])
 
 
-def generate_title_for_listing_type(listing: Listing) -> str:
-    return f'{listing.year} {listing.make} {listing.model}'
-
-
-def add_listing_to_multiple_groups(data: Listing, scraper: Scraper):
+def add_listing_to_multiple_groups(data: Listing, scraper: Scraper) -> None:
     # Create an array for group names by splitting the string by this symbol ";"
     group_names = define_groups_for_posting(data)
-
-    # If the groups are empty do not do anything
     if not group_names:
         return
 
@@ -522,14 +502,18 @@ def add_listing_to_multiple_groups(data: Listing, scraper: Scraper):
     for group_name in group_names:
         if not group_name:
             continue
-        group_element_selector = f'//span[text()="{group_name}"]'
-        group_element = scraper.find_element_by_xpath(xpath=group_element_selector, exit_on_missing_element=False)
+        group_element_selector = f'//span[contains(translate(text(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "{group_name.lower()}")]'
+        group_element = scraper.find_element(selector=group_element_selector,
+                                             by=By.XPATH,
+                                             exit_on_missing_element=False)
         if group_element:
-            scraper.element_click_by_xpath(group_element_selector)
+            scraper.element_click(selector=group_element_selector,
+                                  by=By.XPATH,
+                                  exit_on_missing_element=False,
+                                  use_cursor=True)
 
 
-def post_listing_to_multiple_groups(listing: Listing, scraper: Scraper):
-
+def post_listing_to_multiple_groups(listing: Listing, scraper: Scraper) -> None:
     # Create an array for group names by splitting the string by this symbol ";"
     group_names = define_groups_for_posting(listing)
     if not group_names:
@@ -547,7 +531,7 @@ def post_listing_to_multiple_groups(listing: Listing, scraper: Scraper):
     # Post in different groups
     for group_name in group_names:
         # Click on the Share button to the listing that we want to share
-        share_button_selector = f'//*[contains(translate(@aria-label, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "{title.lower()}")]//span[contains(translate(., "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "share")]'
+        share_button_selector = f'//*[contains(translate(@aria-label, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "{listing.title.lower()}")]//span[contains(translate(., "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "share")]'
         share_button = scraper.find_element(selector=share_button_selector,
                                             by=By.XPATH,
                                             exit_on_missing_element=False)
@@ -563,7 +547,7 @@ def post_listing_to_multiple_groups(listing: Listing, scraper: Scraper):
                               use_cursor=True)
 
         # Click on the Share to a group button
-        share_group_button_selector = '//span[text()="Group"]'
+        share_group_button_selector = '//span[translate(text(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "group"]'
         share_group_button = scraper.find_element(selector=share_group_button_selector,
                                                   by=By.XPATH,
                                                   exit_on_missing_element=False)
@@ -579,14 +563,14 @@ def post_listing_to_multiple_groups(listing: Listing, scraper: Scraper):
                               use_cursor=True)
 
         # Remove current text from this input
-        search_input_selector = '[aria-label="Search for groups"]'
-        scraper.element_delete_text(search_input_selector)
+        search_input_selector = '//*[translate(@aria-label, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "search for groups"]'
+        scraper.element_delete_text(selector=search_input_selector, by=By.XPATH)
 
         # Enter the title of the group in the input for search
         scraper.element_send_keys(search_input_selector, group_name[:51])
 
         # Try to find group element for posting
-        group_element_selector = f'//span[text()="{group_name}"]'
+        group_element_selector = f'//span[contains(translate(text(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "{group_name.lower()}")]'
         group_element = scraper.find_element(selector=group_element_selector,
                                              by=By.XPATH,
                                              exit_on_missing_element=False)
@@ -602,15 +586,17 @@ def post_listing_to_multiple_groups(listing: Listing, scraper: Scraper):
                               use_cursor=True)
 
         # Enter text for posting
-        post_text_field_element_selector = '[aria-label="Create a public post…"]'
+        post_text_field_element_selector = '//*[translate(@aria-label, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "create a public post…"]'
         post_text_field_element = scraper.find_element(selector=post_text_field_element_selector,
+                                                       by=By.XPATH,
                                                        exit_on_missing_element=False,
                                                        wait_element_time=3)
         if post_text_field_element:
             scraper.element_send_keys(selector=post_text_field_element_selector, text=listing.description)
         else:
-            post_text_field_element_selector = '[aria-label="Write something..."]'
+            post_text_field_element_selector = '//*[translate(@aria-label, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "write something..."]'
             post_text_field_element = scraper.find_element(selector=post_text_field_element_selector,
+                                                           by=By.XPATH,
                                                            exit_on_missing_element=False,
                                                            wait_element_time=3)
             if post_text_field_element:
@@ -621,8 +607,9 @@ def post_listing_to_multiple_groups(listing: Listing, scraper: Scraper):
                                       f'Element selector: {post_text_field_element_selector}')
 
         # Try to post listing in group
-        post_button_selector = '[aria-label="Post"]:not([aria-disabled])'
+        post_button_selector = '//*[translate(@aria-label, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "post" and not (@ aria-disabled)]'
         post_button = scraper.find_element(selector=post_button_selector,
+                                           by=By.XPATH,
                                            exit_on_missing_element=False)
         if not post_button:
             system_logger.warning(f'Listing: {listing.title}({listing.vin}) '
@@ -635,13 +622,16 @@ def post_listing_to_multiple_groups(listing: Listing, scraper: Scraper):
                               use_cursor=True)
 
         # Wait till the post is posted successfully
-        scraper.element_wait_to_be_invisible('[role="dialog"]')
-        scraper.element_wait_to_be_invisible('[aria-label="Loading...]"')
-        scraper.find_element_by_xpath('//span[text()="Shared to your group."]', False, 10)
+        scraper.element_wait_to_be_invisible(selector='[role="dialog"]')
+        scraper.element_wait_to_be_invisible(selector='[aria-label="Loading...]"')
+        scraper.find_element(
+            selector='//span[translate(text(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "shared to your group."]',
+            by=By.XPATH,
+            exit_on_missing_element=False,
+            wait_element_time=10)
 
 
 def define_groups_for_posting(listing: Listing) -> list[str]:
-
     # Define groups for posting from listing
     # These groups may be unique for each listing
     group_names = listing.groups.copy()
@@ -682,13 +672,6 @@ def find_listing_by_title(scraper: Scraper, title: str) -> WebElement | None:
         xpath=xpath,
         exit_on_missing_element=False,
         wait_element_time=10)
-
-
-def wait_until_listing_is_published(listing_type, scraper):
-    if listing_type == 'item':
-        scraper.element_wait_to_be_invisible_by_xpath('//h1[text()="Item for sale"]')
-    elif listing_type == 'vehicle':
-        scraper.element_wait_to_be_invisible_by_xpath('//h1[text()="Vehicle for sale"]')
 
 
 def normalize_text_for_compare(text: str) -> str:
