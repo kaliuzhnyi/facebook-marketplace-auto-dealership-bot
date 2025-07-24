@@ -12,11 +12,11 @@ from logger import user_logger
 
 
 def import_data_to_csv(csv_file_name: str = CONFIG['data']['path'],
-                       upload_limit: int = CONFIG['data']['upload_limit']) -> None:
+                       upload_limit: int = CONFIG['data']['upload_limit']) -> int | None:
     user_logger.info('Uploading data from resource - start')
     data = import_data_from_website_cams(CONFIG_DEALER_LICENSE_ID, upload_limit)
     user_logger.info(f'Pushing data to csv({csv_file_name}) file')
-    push_data_to_csv(data, csv_file_name, upload_limit)
+    return push_data_to_csv(data, csv_file_name, upload_limit)
 
 
 def import_data_from_website_cams(license_id: str,
@@ -52,7 +52,7 @@ def import_data_from_website_cams(license_id: str,
 
             stockno = item.get('stockno', '').strip()
 
-            photos_folder = os.path.join(Path(__file__).resolve().parent, CONFIG['photos']['base_folder'])
+            photos_folder = CONFIG['photos']['base_folder']
             if stockno:
                 photos_folder = os.path.join(photos_folder, stockno)
 
@@ -139,7 +139,6 @@ def get_and_save_photos(stockno: str,
 
 
 def clear_photos_base_folder(photos_folder: str):
-
     if not os.path.exists(photos_folder):
         return  # Nothing to clear
 

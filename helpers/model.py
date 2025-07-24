@@ -79,6 +79,15 @@ class FuelType(BaseEnum):
 
     _default_value = OTHER
 
+    @classmethod
+    def from_str(cls, value: str):
+        result = super().from_str(value)
+        if result and result != FuelType._default_value:
+            return result
+        if value.lower() == 'gas':
+            return FuelType.GASOLINE
+        return FuelType._default_value
+
 
 class VehicleCondition(BaseEnum):
     EXCELLENT = "Excellent"
@@ -101,7 +110,7 @@ class Transmission(BaseEnum):
             return result
         if value.lower() == 'manual':
             return Transmission.MANUAL
-        if value.lower() == 'automatic':
+        if 'automatic' in value.lower():
             return Transmission.AUTOMATIC
         return result
 

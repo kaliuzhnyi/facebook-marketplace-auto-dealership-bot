@@ -88,7 +88,8 @@ class Scraper:
         if self.is_cookie_file():
             # Load cookies
             self.load_cookies()
-            self.go_to_page(self.url)
+            if self.driver.current_url != self.url:
+                self.go_to_page(self.url)
 
             # Check if user is logged in after adding the cookies
             is_logged_in = self.is_logged_in(5)
@@ -247,7 +248,6 @@ class Scraper:
                 if delay:
                     self.wait_action_random_time()
                 element.click()
-            element.click()
         except ElementClickInterceptedException:
             self.driver.execute_script("arguments[0].click();", element)
 
@@ -360,6 +360,11 @@ class Scraper:
         element = self.find_element_by_xpath(xpath, exit_on_missing_element)
 
         self.driver.execute_script('arguments[0].scrollIntoView(true);', element)
+
+    def send_key(self, key: str, delay: bool = True):
+        if delay:
+            self.wait_action_random_time()
+        ActionChains(self.driver).send_keys(key).perform()
 
 
 class ScraperDriverManager:

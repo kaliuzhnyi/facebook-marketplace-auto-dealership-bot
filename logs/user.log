@@ -1,32 +1,190 @@
-[07:28:50] Uploading data from resource - start
-[07:28:51] Successfully upload inventory: 2016 AUDI Q5 * AWD * NO ACCIDENTS (stock #P3289)
-[07:28:51] Successfully upload inventory: 2019 HYUNDAI SONATA * LOW FINANCE PAYMENTS * GREAT DEAL (stock #T3288)
-[07:28:51] Successfully uploaded from resource 2 inventories
-[07:28:51] Pushing data to csv(csvs/vehicles.csv) file
-[07:28:51] Successfully pushed inventory to csv file: 2016 AUDI Q5 * AWD * NO ACCIDENTS (stock #P3289)
-[07:28:51] Successfully pushed inventory to csv file: 2019 HYUNDAI SONATA * LOW FINANCE PAYMENTS * GREAT DEAL (stock #T3288)
-[07:28:51] Successfully pushed inventory to csv file 2 inventories
-[07:25:07] Start program
-[07:27:48] Start program
-[22:07:54] Start program
-[22:13:08] Start program
-[22:15:32] Start program
-[22:25:05] Start program
-[22:25:46] Start program
-[22:26:12] Start program
-[22:28:17] Start program
-[22:28:53] Start program
-[22:31:52] Start program
-[22:33:57] Start program
-[22:35:57] Start program
-[10:16:53] Start program
-[10:17:52] Start program
-[15:00:02] Start program
-[15:01:42] Start program
-[15:02:25] Start program
-[15:03:46] Start program
-[15:05:17] Start program
-[15:07:59] Start program
-[15:09:46] Start program
-[15:10:18] Start program
-[15:10:59] Start program
+[22:35:11] Uploading data from resource - start
+[22:35:12] Successfully upload inventory: 2014 MERCEDES-BENZ C-CLASS 300 * AWD * NO ACCIDENTS (stock #T3293)
+[22:35:12] Successfully upload inventory: 2015 SUBARU OUTBACK * AWD * NO ACCIDENTS (stock #P3292)
+[22:35:13] Successfully upload inventory: 2017 FORD ESCAPE * NO ACCIDENTS * LOW PAYMENTS (stock #T3291)
+[22:35:13] Successfully upload inventory: 2016 AUDI Q5 * AWD * NO ACCIDENTS (stock #P3289)
+[22:35:13] Successfully upload inventory: 2019 HYUNDAI SONATA * LOW FINANCE PAYMENTS * GREAT DEAL (stock #T3288)
+[22:35:14] Successfully upload inventory: 2018 MERCEDES-BENZ B-CLASS (stock #T3287)
+[22:35:15] Successfully upload inventory: 2014 SUBARU FORESTER * AWD * NO ACCIDENTS (stock #T3286)
+[22:35:15] Successfully upload inventory: 2015 BMW X1 * NO ACCIDENTS * AWD (stock #T3284)
+[22:35:16] Successfully upload inventory: 2015 HONDA ODYSSEY * TOURING * MUST SEE (stock #T3283)
+[22:35:16] Successfully upload inventory: 2018 VOLKSWAGEN PASSAT * LOW KM * LOW FINANCE PAYMENTS (stock #T3282)
+[22:35:16] Successfully uploaded from resource 10 inventories
+[22:35:16] Pushing data to csv(csvs/vehicles.csv) file
+[22:35:16] Successfully pushed inventory to csv file: 2014 MERCEDES-BENZ C-CLASS 300 * AWD * NO ACCIDENTS (stock #T3293)
+[22:35:16] Successfully pushed inventory to csv file: 2015 SUBARU OUTBACK * AWD * NO ACCIDENTS (stock #P3292)
+[22:35:16] Successfully pushed inventory to csv file: 2017 FORD ESCAPE * NO ACCIDENTS * LOW PAYMENTS (stock #T3291)
+[22:35:16] Successfully pushed inventory to csv file: 2016 AUDI Q5 * AWD * NO ACCIDENTS (stock #P3289)
+[22:35:16] Successfully pushed inventory to csv file: 2019 HYUNDAI SONATA * LOW FINANCE PAYMENTS * GREAT DEAL (stock #T3288)
+[22:35:16] Successfully pushed inventory to csv file: 2018 MERCEDES-BENZ B-CLASS (stock #T3287)
+[22:35:16] Successfully pushed inventory to csv file: 2014 SUBARU FORESTER * AWD * NO ACCIDENTS (stock #T3286)
+[22:35:16] Successfully pushed inventory to csv file: 2015 BMW X1 * NO ACCIDENTS * AWD (stock #T3284)
+[22:35:16] Successfully pushed inventory to csv file: 2015 HONDA ODYSSEY * TOURING * MUST SEE (stock #T3283)
+[22:35:16] Successfully pushed inventory to csv file: 2018 VOLKSWAGEN PASSAT * LOW KM * LOW FINANCE PAYMENTS (stock #T3282)
+[22:35:16] Successfully pushed inventory to csv file 10 inventories
+[22:35:25] Uploading data from resource - start
+[22:35:26] Successfully upload inventory: 2014 MERCEDES-BENZ C-CLASS 300 * AWD * NO ACCIDENTS (stock #T3293)
+[22:35:26] Successfully upload inventory: 2015 SUBARU OUTBACK * AWD * NO ACCIDENTS (stock #P3292)
+[22:35:27] Successfully upload inventory: 2017 FORD ESCAPE * NO ACCIDENTS * LOW PAYMENTS (stock #T3291)
+[22:35:27] Successfully upload inventory: 2016 AUDI Q5 * AWD * NO ACCIDENTS (stock #P3289)
+[22:35:27] Successfully upload inventory: 2019 HYUNDAI SONATA * LOW FINANCE PAYMENTS * GREAT DEAL (stock #T3288)
+[22:35:28] Successfully upload inventory: 2018 MERCEDES-BENZ B-CLASS (stock #T3287)
+[22:35:29] Successfully upload inventory: 2014 SUBARU FORESTER * AWD * NO ACCIDENTS (stock #T3286)
+[22:35:29] Successfully upload inventory: 2015 BMW X1 * NO ACCIDENTS * AWD (stock #T3284)
+[22:35:30] Successfully upload inventory: 2015 HONDA ODYSSEY * TOURING * MUST SEE (stock #T3283)
+[22:35:30] Successfully upload inventory: 2018 VOLKSWAGEN PASSAT * LOW KM * LOW FINANCE PAYMENTS (stock #T3282)
+[22:35:30] Successfully uploaded from resource 10 inventories
+[22:35:30] Pushing data to csv(csvs/vehicles.csv) file
+[22:35:30] Successfully pushed inventory to csv file: 2014 MERCEDES-BENZ C-CLASS 300 * AWD * NO ACCIDENTS (stock #T3293)
+[22:35:30] Successfully pushed inventory to csv file: 2015 SUBARU OUTBACK * AWD * NO ACCIDENTS (stock #P3292)
+[22:35:30] Successfully pushed inventory to csv file: 2017 FORD ESCAPE * NO ACCIDENTS * LOW PAYMENTS (stock #T3291)
+[22:35:30] Successfully pushed inventory to csv file: 2016 AUDI Q5 * AWD * NO ACCIDENTS (stock #P3289)
+[22:35:30] Successfully pushed inventory to csv file: 2019 HYUNDAI SONATA * LOW FINANCE PAYMENTS * GREAT DEAL (stock #T3288)
+[22:35:30] Successfully pushed inventory to csv file: 2018 MERCEDES-BENZ B-CLASS (stock #T3287)
+[22:35:30] Successfully pushed inventory to csv file: 2014 SUBARU FORESTER * AWD * NO ACCIDENTS (stock #T3286)
+[22:35:30] Successfully pushed inventory to csv file: 2015 BMW X1 * NO ACCIDENTS * AWD (stock #T3284)
+[22:35:30] Successfully pushed inventory to csv file: 2015 HONDA ODYSSEY * TOURING * MUST SEE (stock #T3283)
+[22:35:30] Successfully pushed inventory to csv file: 2018 VOLKSWAGEN PASSAT * LOW KM * LOW FINANCE PAYMENTS (stock #T3282)
+[22:35:30] Successfully pushed inventory to csv file 10 inventories
+[22:46:59] Uploading data from resource - start
+[22:53:44] Start program
+[22:53:46] Uploading data from resource - start
+[22:53:50] Successfully upload inventory: 2014 MERCEDES-BENZ C-CLASS 300 * AWD * NO ACCIDENTS (stock #T3293)
+[22:53:51] Successfully upload inventory: 2015 SUBARU OUTBACK * AWD * NO ACCIDENTS (stock #P3292)
+[22:53:51] Successfully upload inventory: 2017 FORD ESCAPE * NO ACCIDENTS * LOW PAYMENTS (stock #T3291)
+[22:53:52] Successfully upload inventory: 2016 AUDI Q5 * AWD * NO ACCIDENTS (stock #P3289)
+[22:53:52] Successfully upload inventory: 2019 HYUNDAI SONATA * LOW FINANCE PAYMENTS * GREAT DEAL (stock #T3288)
+[22:53:52] Successfully upload inventory: 2018 MERCEDES-BENZ B-CLASS (stock #T3287)
+[22:53:53] Successfully upload inventory: 2014 SUBARU FORESTER * AWD * NO ACCIDENTS (stock #T3286)
+[22:53:56] Successfully upload inventory: 2015 BMW X1 * NO ACCIDENTS * AWD (stock #T3284)
+[22:53:56] Successfully upload inventory: 2015 HONDA ODYSSEY * TOURING * MUST SEE (stock #T3283)
+[22:53:56] Successfully upload inventory: 2018 VOLKSWAGEN PASSAT * LOW KM * LOW FINANCE PAYMENTS (stock #T3282)
+[22:53:56] Successfully uploaded from resource 10 inventories
+[22:53:56] Pushing data to csv(csvs/vehicles.csv) file
+[22:53:56] Successfully pushed inventory to csv file: 2014 MERCEDES-BENZ C-CLASS 300 * AWD * NO ACCIDENTS (stock #T3293)
+[22:53:56] Successfully pushed inventory to csv file: 2015 SUBARU OUTBACK * AWD * NO ACCIDENTS (stock #P3292)
+[22:53:56] Successfully pushed inventory to csv file: 2017 FORD ESCAPE * NO ACCIDENTS * LOW PAYMENTS (stock #T3291)
+[22:53:56] Successfully pushed inventory to csv file: 2016 AUDI Q5 * AWD * NO ACCIDENTS (stock #P3289)
+[22:53:56] Successfully pushed inventory to csv file: 2019 HYUNDAI SONATA * LOW FINANCE PAYMENTS * GREAT DEAL (stock #T3288)
+[22:53:56] Successfully pushed inventory to csv file: 2018 MERCEDES-BENZ B-CLASS (stock #T3287)
+[22:53:56] Successfully pushed inventory to csv file: 2014 SUBARU FORESTER * AWD * NO ACCIDENTS (stock #T3286)
+[22:53:56] Successfully pushed inventory to csv file: 2015 BMW X1 * NO ACCIDENTS * AWD (stock #T3284)
+[22:53:56] Successfully pushed inventory to csv file: 2015 HONDA ODYSSEY * TOURING * MUST SEE (stock #T3283)
+[22:53:56] Successfully pushed inventory to csv file: 2018 VOLKSWAGEN PASSAT * LOW KM * LOW FINANCE PAYMENTS (stock #T3282)
+[22:53:56] Successfully pushed inventory to csv file 10 inventories
+[22:54:26] Uploading data from resource - start
+[22:56:09] Start program
+[22:56:12] Uploading data from resource - start
+[22:56:18] Successfully upload inventory: 2014 MERCEDES-BENZ C-CLASS 300 * AWD * NO ACCIDENTS (stock #T3293)
+[22:56:18] Successfully upload inventory: 2015 SUBARU OUTBACK * AWD * NO ACCIDENTS (stock #P3292)
+[22:56:19] Successfully upload inventory: 2017 FORD ESCAPE * NO ACCIDENTS * LOW PAYMENTS (stock #T3291)
+[22:56:19] Successfully upload inventory: 2016 AUDI Q5 * AWD * NO ACCIDENTS (stock #P3289)
+[22:56:19] Successfully upload inventory: 2019 HYUNDAI SONATA * LOW FINANCE PAYMENTS * GREAT DEAL (stock #T3288)
+[22:56:20] Successfully upload inventory: 2018 MERCEDES-BENZ B-CLASS (stock #T3287)
+[22:56:21] Successfully upload inventory: 2014 SUBARU FORESTER * AWD * NO ACCIDENTS (stock #T3286)
+[22:56:21] Successfully upload inventory: 2015 BMW X1 * NO ACCIDENTS * AWD (stock #T3284)
+[22:56:21] Successfully upload inventory: 2015 HONDA ODYSSEY * TOURING * MUST SEE (stock #T3283)
+[22:56:21] Successfully upload inventory: 2018 VOLKSWAGEN PASSAT * LOW KM * LOW FINANCE PAYMENTS (stock #T3282)
+[22:56:21] Successfully uploaded from resource 10 inventories
+[22:56:21] Pushing data to csv(csvs/vehicles.csv) file
+[22:56:21] Successfully pushed inventory to csv file: 2014 MERCEDES-BENZ C-CLASS 300 * AWD * NO ACCIDENTS (stock #T3293)
+[22:56:21] Successfully pushed inventory to csv file: 2015 SUBARU OUTBACK * AWD * NO ACCIDENTS (stock #P3292)
+[22:56:21] Successfully pushed inventory to csv file: 2017 FORD ESCAPE * NO ACCIDENTS * LOW PAYMENTS (stock #T3291)
+[22:56:21] Successfully pushed inventory to csv file: 2016 AUDI Q5 * AWD * NO ACCIDENTS (stock #P3289)
+[22:56:21] Successfully pushed inventory to csv file: 2019 HYUNDAI SONATA * LOW FINANCE PAYMENTS * GREAT DEAL (stock #T3288)
+[22:56:21] Successfully pushed inventory to csv file: 2018 MERCEDES-BENZ B-CLASS (stock #T3287)
+[22:56:21] Successfully pushed inventory to csv file: 2014 SUBARU FORESTER * AWD * NO ACCIDENTS (stock #T3286)
+[22:56:21] Successfully pushed inventory to csv file: 2015 BMW X1 * NO ACCIDENTS * AWD (stock #T3284)
+[22:56:21] Successfully pushed inventory to csv file: 2015 HONDA ODYSSEY * TOURING * MUST SEE (stock #T3283)
+[22:56:21] Successfully pushed inventory to csv file: 2018 VOLKSWAGEN PASSAT * LOW KM * LOW FINANCE PAYMENTS (stock #T3282)
+[22:56:21] Successfully pushed inventory to csv file 10 inventories
+[23:02:19] Start program
+[23:02:46] Start program
+[23:02:56] Start program
+[23:08:49] Start program
+[23:11:59] Start program
+[23:16:10] Start program
+[23:26:10] Start program
+[23:30:19] Start program
+[23:32:40] Start program
+[23:51:09] Start program
+[00:01:24] Start program
+[00:25:01] Start program
+[00:25:30] Start program
+[00:28:04] Start program
+[00:32:03] Start program
+[00:33:30] Start program
+[00:35:53] Start program
+[00:35:59] Start program
+[00:41:14] Start program
+[00:43:20] Start program
+[00:56:52] Start program
+[01:03:50] Start program
+[22:37:04] Start program
+[22:54:11] Start program
+[22:57:45] Start program
+[23:00:06] Start program
+[23:04:54] Start program
+[23:10:31] Start program
+[23:30:57] Start program
+[23:36:34] Start program
+[06:33:14] Start program
+[06:43:53] Start program
+[06:46:51] Start program
+[07:07:01] Start program
+[07:16:36] Start program
+[07:16:39] Uploading data from resource - start
+[07:16:40] Successfully upload inventory: 2019 CHEVROLET EQUINOX (stock #3290)
+[07:16:40] Successfully upload inventory: 2014 MERCEDES-BENZ C-CLASS 300 * AWD * NO ACCIDENTS (stock #T3293)
+[07:16:41] Successfully upload inventory: 2015 SUBARU OUTBACK * AWD * NO ACCIDENTS (stock #P3292)
+[07:16:41] Successfully upload inventory: 2017 FORD ESCAPE * NO ACCIDENTS * LOW PAYMENTS (stock #T3291)
+[07:16:42] Successfully upload inventory: 2016 AUDI Q5 * AWD * NO ACCIDENTS (stock #P3289)
+[07:16:42] Successfully upload inventory: 2019 HYUNDAI SONATA * LOW FINANCE PAYMENTS * GREAT DEAL (stock #T3288)
+[07:16:43] Successfully upload inventory: 2018 MERCEDES-BENZ B-CLASS (stock #T3287)
+[07:16:44] Successfully upload inventory: 2014 SUBARU FORESTER * AWD * NO ACCIDENTS (stock #T3286)
+[07:16:44] Successfully upload inventory: 2015 BMW X1 * NO ACCIDENTS * AWD (stock #T3284)
+[07:16:45] Successfully upload inventory: 2015 HONDA ODYSSEY * TOURING * MUST SEE (stock #T3283)
+[07:16:45] Successfully uploaded from resource 10 inventories
+[07:16:45] Pushing data to csv(csvs/vehicles.csv) file
+[07:16:45] Successfully pushed inventory to csv file: 2019 CHEVROLET EQUINOX (stock #3290)
+[07:16:45] Successfully pushed inventory to csv file: 2014 MERCEDES-BENZ C-CLASS 300 * AWD * NO ACCIDENTS (stock #T3293)
+[07:16:45] Successfully pushed inventory to csv file: 2015 SUBARU OUTBACK * AWD * NO ACCIDENTS (stock #P3292)
+[07:16:45] Successfully pushed inventory to csv file: 2017 FORD ESCAPE * NO ACCIDENTS * LOW PAYMENTS (stock #T3291)
+[07:16:45] Successfully pushed inventory to csv file: 2016 AUDI Q5 * AWD * NO ACCIDENTS (stock #P3289)
+[07:16:45] Successfully pushed inventory to csv file: 2019 HYUNDAI SONATA * LOW FINANCE PAYMENTS * GREAT DEAL (stock #T3288)
+[07:16:45] Successfully pushed inventory to csv file: 2018 MERCEDES-BENZ B-CLASS (stock #T3287)
+[07:16:45] Successfully pushed inventory to csv file: 2014 SUBARU FORESTER * AWD * NO ACCIDENTS (stock #T3286)
+[07:16:45] Successfully pushed inventory to csv file: 2015 BMW X1 * NO ACCIDENTS * AWD (stock #T3284)
+[07:16:45] Successfully pushed inventory to csv file: 2015 HONDA ODYSSEY * TOURING * MUST SEE (stock #T3283)
+[07:16:45] Successfully pushed inventory to csv file 10 inventories
+[07:18:06] Start program
+[07:24:46] Start program
+[07:24:51] Uploading data from resource - start
+[07:24:52] Successfully upload inventory: 2019 CHEVROLET EQUINOX (stock #3290)
+[07:24:52] Successfully upload inventory: 2014 MERCEDES-BENZ C-CLASS 300 * AWD * NO ACCIDENTS (stock #T3293)
+[07:24:53] Successfully upload inventory: 2015 SUBARU OUTBACK * AWD * NO ACCIDENTS (stock #P3292)
+[07:24:53] Successfully upload inventory: 2017 FORD ESCAPE * NO ACCIDENTS * LOW PAYMENTS (stock #T3291)
+[07:24:54] Successfully upload inventory: 2016 AUDI Q5 * AWD * NO ACCIDENTS (stock #P3289)
+[07:24:54] Successfully upload inventory: 2019 HYUNDAI SONATA * LOW FINANCE PAYMENTS * GREAT DEAL (stock #T3288)
+[07:24:55] Successfully upload inventory: 2018 MERCEDES-BENZ B-CLASS (stock #T3287)
+[07:24:56] Successfully upload inventory: 2014 SUBARU FORESTER * AWD * NO ACCIDENTS (stock #T3286)
+[07:24:56] Successfully upload inventory: 2015 BMW X1 * NO ACCIDENTS * AWD (stock #T3284)
+[07:24:56] Successfully upload inventory: 2015 HONDA ODYSSEY * TOURING * MUST SEE (stock #T3283)
+[07:24:56] Successfully uploaded from resource 10 inventories
+[07:24:56] Pushing data to csv(csvs/vehicles.csv) file
+[07:24:56] Successfully pushed inventory to csv file: 2019 CHEVROLET EQUINOX (stock #3290)
+[07:24:56] Successfully pushed inventory to csv file: 2014 MERCEDES-BENZ C-CLASS 300 * AWD * NO ACCIDENTS (stock #T3293)
+[07:24:56] Successfully pushed inventory to csv file: 2015 SUBARU OUTBACK * AWD * NO ACCIDENTS (stock #P3292)
+[07:24:56] Successfully pushed inventory to csv file: 2017 FORD ESCAPE * NO ACCIDENTS * LOW PAYMENTS (stock #T3291)
+[07:24:56] Successfully pushed inventory to csv file: 2016 AUDI Q5 * AWD * NO ACCIDENTS (stock #P3289)
+[07:24:56] Successfully pushed inventory to csv file: 2019 HYUNDAI SONATA * LOW FINANCE PAYMENTS * GREAT DEAL (stock #T3288)
+[07:24:56] Successfully pushed inventory to csv file: 2018 MERCEDES-BENZ B-CLASS (stock #T3287)
+[07:24:56] Successfully pushed inventory to csv file: 2014 SUBARU FORESTER * AWD * NO ACCIDENTS (stock #T3286)
+[07:24:56] Successfully pushed inventory to csv file: 2015 BMW X1 * NO ACCIDENTS * AWD (stock #T3284)
+[07:24:56] Successfully pushed inventory to csv file: 2015 HONDA ODYSSEY * TOURING * MUST SEE (stock #T3283)
+[07:24:56] Successfully pushed inventory to csv file 10 inventories
+[07:51:21] Start program
+[07:54:19] Start program
+[07:55:47] Start program
+[08:00:23] Start program
+[08:12:25] Start program

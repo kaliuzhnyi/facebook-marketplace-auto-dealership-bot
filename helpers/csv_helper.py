@@ -15,6 +15,8 @@ def get_data_from_csv(file_path: str = CONFIG['data']['path']) -> list[Listing]:
         for row_dict in reader:
             if not any(value.strip() for value in row_dict.values() if value):
                 continue
+            groups = row_dict.get('groups', '')
+            groups = groups.split(';') if groups else []
             rows.append(Listing(
                 photos_folder=row_dict.get('photos_folder', ''),
                 photos_names=row_dict.get('photos_names', '').split(";"),
@@ -33,7 +35,7 @@ def get_data_from_csv(file_path: str = CONFIG['data']['path']) -> list[Listing]:
                 title=row_dict.get('title', ''),
                 description=row_dict.get('description', ''),
                 location=row_dict.get('location', ''),
-                groups=row_dict.get('groups', '').split(";"),
+                groups=groups,
                 stockno=row_dict.get('stockno', ''),
                 vin=row_dict.get('vin', '')
             ))
@@ -42,10 +44,10 @@ def get_data_from_csv(file_path: str = CONFIG['data']['path']) -> list[Listing]:
 
 def push_data_to_csv(rows: list[Listing],
                      file_path: str = CONFIG['data']['path'],
-                     upload_limit: int = CONFIG['data']['upload_limit']):
+                     upload_limit: int = CONFIG['data']['upload_limit']) -> int | None:
     if not rows:
         user_logger.warning('No inventory to push in csv file')
-        return
+        return None
 
     fieldnames = [f.name for f in dataclasses.fields(rows[0])]
 
@@ -70,3 +72,4 @@ def push_data_to_csv(rows: list[Listing],
                              f'{row.year} {row.make} {row.model} (stock #{row.stockno})')
 
     user_logger.info(f'Successfully pushed inventory to csv file {i} inventories')
+    return i

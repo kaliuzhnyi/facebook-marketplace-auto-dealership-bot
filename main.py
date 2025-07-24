@@ -42,8 +42,8 @@ def launch_facebook_marketplace_bot():
         global scraper, scraper_driver_manager
 
         scraper_driver_manager.create_tab('facebook', True)
-        scraper = Scraper(driver=scraper_driver_manager.driver, url='https://facebook.com')
-        scraper.add_login_functionality(login_url='https://facebook.com',
+        scraper = Scraper(driver=scraper_driver_manager.driver, url='https://facebook.com/')
+        scraper.add_login_functionality(login_url='https://facebook.com/',
                                         is_logged_in_selector='svg[aria-label="Your profile"]',
                                         cookies_file_name='facebook')
         scraper.go_to_page('https://facebook.com/marketplace/you/selling')
@@ -85,7 +85,11 @@ def launch_facebook_marketplace_bot():
             scheduler.remove_job(job_id)
 
     def on_upload_data_button_click() -> None:
-        import_data_to_csv(CONFIG['data']['path'], CONFIG['data']['upload_limit'])
+        import_result = import_data_to_csv(CONFIG['data']['path'], CONFIG['data']['upload_limit'])
+        if import_result:
+            ui.notify(f'Successfully uploaded and saved {import_result} listings', type='positive')
+        else:
+            ui.notify(f'No data to upload and save', type='negative')
 
     def on_save_config_button_click() -> None:
         CONFIG['scraper']['action_random_delay']['min'] = config_field_action_random_delay_min.value
@@ -96,6 +100,7 @@ def launch_facebook_marketplace_bot():
         CONFIG['listing']['lifetime'] = config_field_listing_lifetime.value
         CONFIG['listing']['description']['replace']['old_value'] = config_listing_description_replace_old_value.value
         CONFIG['listing']['description']['replace']['new_value'] = config_listing_description_replace_new_value.value
+        CONFIG['listing']['public_groups'] = config_listing_public_groups.value
         CONFIG['data']['path'] = config_field_data_path.value
         CONFIG['data']['upload_limit'] = config_field_data_upload_limit.value
         save_config()
@@ -135,8 +140,9 @@ def launch_facebook_marketplace_bot():
             with ui.button(text='Stop', on_click=on_stop_button, color='negative') as button_stop:
                 ui.tooltip('Start process.')
 
-            with ui.button(text="Upload data", on_click=on_upload_data_button_click, color='secondary'):
-                ui.tooltip('Upload and/or update data to inner database from external resources')
+            button_upload_data = (
+                ui.button(text="Upload data", on_click=on_upload_data_button_click, color='secondary')
+                .tooltip('Upload and/or update data to inner database from external resources'))
 
             with ui.button(text="Start", on_click=on_start_button_click):
                 ui.tooltip('Start publish listings')
@@ -206,6 +212,14 @@ def launch_facebook_marketplace_bot():
                                 ui.textarea(label='New value',
                                             value=CONFIG['listing']['description']['replace']['new_value'])
                                 .tooltip(text='This value will be insert to listing description instead old value')
+                                .classes('w-full h-1/4'))
+
+                            ui.markdown('')
+                            config_listing_public_groups = (
+                                ui.textarea(label='Public in groups',
+                                            value=CONFIG['listing']['public_groups'])
+                                .tooltip(text='After publishing listing on marketplace the listing'
+                                              'will be already add and public in groups')
                                 .classes('w-full h-1/4'))
 
                 with ui.tab_panel(tab_panel_data):
