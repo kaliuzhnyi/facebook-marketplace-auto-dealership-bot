@@ -247,7 +247,6 @@ class Scraper:
                 if delay:
                     self.wait_action_random_time()
                 element.click()
-            element.click()
         except ElementClickInterceptedException:
             self.driver.execute_script("arguments[0].click();", element)
 

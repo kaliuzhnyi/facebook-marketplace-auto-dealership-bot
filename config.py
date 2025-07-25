@@ -17,8 +17,8 @@ def load_config(config_file_path: str = CONFIG_FILE_PATH):
 
 def save_config(config_file_path: str = CONFIG_FILE_PATH):
     global CONFIG
-    with open(config_file_path, "w") as f:
-        yaml.dump(CONFIG, f, default_flow_style=False, encoding='utf-8')
+    with open(config_file_path, "w", encoding="utf-8") as f:
+        yaml.dump(CONFIG, f, default_flow_style=False, allow_unicode=True)
 
 
 load_config()
