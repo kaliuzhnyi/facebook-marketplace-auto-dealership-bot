@@ -1,4 +1,3 @@
-# Remove and then publish each listing
 import re
 import unicodedata
 from datetime import datetime
@@ -13,7 +12,9 @@ from helpers.scraper import Scraper
 from logger import system_logger
 
 PAGES = {
-    'selling': 'https://facebook.com/marketplace/you/selling'
+    'selling': 'https://facebook.com/marketplace/you/selling',
+    'create_new_listing': 'https://www.facebook.com/marketplace/create',
+    'create_new_listing_vehicle': 'https://www.facebook.com/marketplace/create/vehicle'
 }
 
 
@@ -308,21 +309,20 @@ def publish_listing(data: Listing, scraper: Scraper):
     create_listing_button = scraper.find_element(selector=create_listing_button_selector,
                                                  exit_on_missing_element=False,
                                                  wait_element_time=20)
-    if not create_listing_button:
-        scraper.go_to_page(PAGES['selling'])
-
-    scraper.element_click(selector=create_listing_button_selector, use_cursor=True)
+    if create_listing_button:
+        scraper.element_click(selector=create_listing_button_selector, use_cursor=True)
+    else:
+        scraper.go_to_page(PAGES['create_new_listing'])
 
     # Choose listing type
-    listing_type_button_selector = '//span[text()="Vehicle for sale"]'
+    listing_type_button_selector = '//span[translate(text(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "vehicle for sale"]'
     listing_type_button = scraper.find_element(selector=listing_type_button_selector,
                                                by=By.XPATH,
                                                exit_on_missing_element=False)
     if not listing_type_button:
-        system_logger.error(f'Cant find element {listing_type_button_selector}')
-        return False
-
-    scraper.element_click(selector=listing_type_button_selector, by=By.XPATH, use_cursor=True)
+        scraper.element_click(selector=listing_type_button_selector, by=By.XPATH, use_cursor=True)
+    else:
+        scraper.go_to_page(PAGES['create_new_listing_vehicle'])
 
     # Create string that contains all the image paths separated by \n
     images_path = generate_multiple_images_path(data.photos_folder, data.photos_names)
