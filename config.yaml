@@ -25,7 +25,7 @@ photos:
   base_folder: /Users/i.kaliuzhnyi/PycharmProjects/facebook-marketplace-auto-dealership-bot/photos
 scraper:
   action_random_delay:
-    max: 7.2
+    max: 3.2
     min: 0.29
   listing_random_delay:
     max: 3600

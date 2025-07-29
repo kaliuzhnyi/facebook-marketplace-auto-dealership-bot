@@ -312,3 +312,201 @@
 [2025-07-23 08:12:25] INFO: Build program UI - start
 [2025-07-23 08:12:25] INFO: Build program UI - end
 [2025-07-23 08:12:25] INFO: Run browser with program UI
+[2025-07-26 14:23:47] INFO in <module> (main.py:255): Start program
+[2025-07-26 14:23:47] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-26 14:23:47] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-26 14:23:47] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-26 17:41:04] INFO in <module> (main.py:255): Start program
+[2025-07-26 17:41:04] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-26 17:41:04] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-26 17:41:04] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-26 21:47:50] INFO in <module> (main.py:255): Start program
+[2025-07-26 21:47:50] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-26 21:47:50] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-26 21:47:50] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 15:13:44] INFO in <module> (main.py:255): Start program
+[2025-07-27 15:13:44] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 15:13:44] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 15:13:44] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 15:14:19] INFO in <module> (main.py:255): Start program
+[2025-07-27 15:14:19] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 15:14:19] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 15:14:19] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 15:18:38] INFO in <module> (main.py:255): Start program
+[2025-07-27 15:18:38] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 15:18:38] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 15:18:38] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 15:20:12] INFO in <module> (main.py:255): Start program
+[2025-07-27 15:20:12] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 15:20:12] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 15:20:12] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 15:26:33] INFO in <module> (main.py:255): Start program
+[2025-07-27 15:26:33] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 15:26:33] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 15:26:33] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 15:28:54] INFO in <module> (main.py:255): Start program
+[2025-07-27 15:28:54] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 15:28:54] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 15:28:54] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 15:37:03] INFO in <module> (main.py:255): Start program
+[2025-07-27 15:37:03] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 15:37:03] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 15:37:03] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 15:38:01] INFO in <module> (main.py:255): Start program
+[2025-07-27 15:38:01] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 15:38:01] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 15:38:01] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 15:41:52] INFO in <module> (main.py:255): Start program
+[2025-07-27 15:41:52] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 15:41:52] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 15:41:52] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 15:46:42] INFO in <module> (main.py:255): Start program
+[2025-07-27 15:46:42] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 15:46:42] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 15:46:42] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 15:51:57] INFO in <module> (main.py:255): Start program
+[2025-07-27 15:51:57] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 15:51:57] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 15:51:57] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 15:53:30] INFO in <module> (main.py:255): Start program
+[2025-07-27 15:53:30] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 15:53:30] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 15:53:30] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 15:56:41] INFO in <module> (main.py:255): Start program
+[2025-07-27 15:56:41] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 15:56:41] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 15:56:41] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 22:09:09] INFO in <module> (main.py:255): Start program
+[2025-07-27 22:09:09] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 22:09:09] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 22:09:09] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 22:10:15] INFO in <module> (main.py:255): Start program
+[2025-07-27 22:10:15] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 22:10:15] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 22:10:15] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 22:22:56] INFO in <module> (main.py:255): Start program
+[2025-07-27 22:22:56] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 22:22:56] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 22:22:56] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 22:31:41] INFO in <module> (main.py:255): Start program
+[2025-07-27 22:31:41] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 22:31:41] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 22:31:41] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 22:37:52] INFO in <module> (main.py:255): Start program
+[2025-07-27 22:37:52] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 22:37:52] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 22:37:52] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 22:39:32] INFO in <module> (main.py:255): Start program
+[2025-07-27 22:39:32] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 22:39:32] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 22:39:32] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 22:40:39] INFO in <module> (main.py:255): Start program
+[2025-07-27 22:40:39] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 22:40:39] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 22:40:39] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 22:44:13] INFO in <module> (main.py:255): Start program
+[2025-07-27 22:44:13] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 22:44:13] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 22:44:13] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-27 23:03:05] INFO in post_listing_to_multiple_groups (listing_helper.py:508): Listing: 2016 AUDI Q5 * AWD * NO ACCIDENTS(WA1L2AFP2GA116414) Start posting listing to groups.
+[2025-07-27 23:03:05] ERROR in find_listing_by_title (listing_helper.py:647): Cant find element input[placeholder="Search your listings"]
+[2025-07-27 23:03:05] ERROR in post_listing_to_multiple_groups (listing_helper.py:513): Listing: 2016 AUDI Q5 * AWD * NO ACCIDENTS(WA1L2AFP2GA116414) Can not find listing element.
+[2025-07-27 23:18:10] INFO in <module> (main.py:255): Start program
+[2025-07-27 23:18:10] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-27 23:18:10] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-27 23:18:10] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 06:44:38] INFO in <module> (main.py:255): Start program
+[2025-07-28 06:44:38] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 06:44:38] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 06:44:38] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 07:08:14] INFO in <module> (main.py:255): Start program
+[2025-07-28 07:08:14] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 07:08:14] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 07:08:14] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 08:22:23] INFO in <module> (main.py:255): Start program
+[2025-07-28 08:22:23] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 08:22:23] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 08:22:23] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 08:22:27] INFO in <module> (main.py:255): Start program
+[2025-07-28 08:22:27] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 08:22:27] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 08:22:27] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 08:24:40] INFO in <module> (main.py:255): Start program
+[2025-07-28 08:24:40] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 08:24:40] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 08:24:40] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 08:27:36] INFO in <module> (main.py:255): Start program
+[2025-07-28 08:27:36] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 08:27:36] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 08:27:36] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 08:33:41] INFO in post_listing_to_multiple_groups (listing_helper.py:540): Listing: 2019 CHEVROLET EQUINOX(2GNAXVEX7K6269763) Start posting listing to groups.
+[2025-07-28 08:38:16] INFO in <module> (main.py:255): Start program
+[2025-07-28 08:38:16] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 08:38:16] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 08:38:16] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 08:41:55] INFO in <module> (main.py:255): Start program
+[2025-07-28 08:41:55] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 08:41:55] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 08:41:55] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 08:45:46] INFO in <module> (main.py:255): Start program
+[2025-07-28 08:45:46] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 08:45:46] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 08:45:46] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 08:47:41] INFO in <module> (main.py:255): Start program
+[2025-07-28 08:47:41] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 08:47:41] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 08:47:41] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 08:51:37] INFO in <module> (main.py:255): Start program
+[2025-07-28 08:51:37] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 08:51:37] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 08:51:37] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 08:54:39] INFO in <module> (main.py:255): Start program
+[2025-07-28 08:54:39] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 08:54:39] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 08:54:39] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 08:57:04] INFO in <module> (main.py:255): Start program
+[2025-07-28 08:57:04] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 08:57:04] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 08:57:04] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 08:58:12] INFO in <module> (main.py:255): Start program
+[2025-07-28 08:58:12] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 08:58:12] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 08:58:12] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 09:00:02] INFO in <module> (main.py:255): Start program
+[2025-07-28 09:00:02] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 09:00:02] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 09:00:02] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 09:08:45] INFO in <module> (main.py:255): Start program
+[2025-07-28 09:08:45] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 09:08:45] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 09:08:45] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 22:36:13] INFO in <module> (main.py:255): Start program
+[2025-07-28 22:36:13] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 22:36:13] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 22:36:13] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 22:38:21] INFO in <module> (main.py:255): Start program
+[2025-07-28 22:38:21] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 22:38:22] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 22:38:22] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 22:39:17] INFO in <module> (main.py:255): Start program
+[2025-07-28 22:39:17] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 22:39:17] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 22:39:17] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 23:03:38] INFO in <module> (main.py:255): Start program
+[2025-07-28 23:03:38] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 23:03:38] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 23:03:38] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 23:13:07] INFO in <module> (main.py:255): Start program
+[2025-07-28 23:13:07] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 23:13:07] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 23:13:07] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 23:25:22] INFO in <module> (main.py:255): Start program
+[2025-07-28 23:25:22] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-28 23:25:22] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-28 23:25:22] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-28 23:29:50] INFO in post_listing_to_multiple_groups (listing_helper.py:561): Listing: 2019 HYUNDAI SONATA * LOW FINANCE PAYMENTS * GREAT DEAL(5NPE24AF5KH764071) Start posting listing to groups.
+[2025-07-29 07:05:51] INFO in <module> (main.py:255): Start program
+[2025-07-29 07:05:51] INFO in launch_facebook_marketplace_bot (main.py:128): Build program UI - start
+[2025-07-29 07:05:51] INFO in launch_facebook_marketplace_bot (main.py:250): Build program UI - end
+[2025-07-29 07:05:51] INFO in launch_browser_and_open_gui (main.py:28): Run browser with program UI
+[2025-07-29 07:09:34] INFO in post_listing_to_multiple_groups (listing_helper.py:561): Listing: 2018 MERCEDES-BENZ B-CLASS(WDDMH4GB7JJ444664) Start posting listing to groups.

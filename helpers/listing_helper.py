@@ -18,6 +18,34 @@ PAGES = {
 }
 
 
+class XPATH:
+
+    @classmethod
+    def selling_listing_container_clickable_element(cls, listing_title: str) -> str:
+        cls.translate_expr('@aria-label', ' ')
+        return f'//div/div/div/div[2]/div/div[{cls.translate_eq_expr(normalize_title_for_compare(listing_title), "@aria-label", " ")}]'
+
+    @classmethod
+    def selling_listing_container(cls, listing_title: str) -> str:
+        return f'//div[.{cls.selling_listing_container_clickable_element(listing_title)[1:]}]'
+
+    @classmethod
+    def selling_search_input(cls):
+        return f'//input[{cls.translate_eq_expr("search your listings", "@placeholder")}]'
+
+    @classmethod
+    def translate_expr(cls, str1: str, str2: str = '', str3: str = ''):
+        return f'translate({str1}, "ABCDEFGHIJKLMNOPQRSTUVWXYZАБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ{str2}", "abcdefghijklmnopqrstuvwxyzабвгґдеєжзиіїйклмнопрстуфхцчшщъыьэюя{str3}")'
+
+    @classmethod
+    def translate_eq_expr(cls, value: str, str1: str, str2: str = '', str3: str = ''):
+        return f'{cls.translate_expr(str1, str2, str3)} = "{value.lower()}"'
+
+    @classmethod
+    def translate_cont_expr(cls, value: str, str1: str, str2: str = '', str3: str = ''):
+        return f'contains({cls.translate_expr(str1, str2, str3)}, "{value.lower()}")'
+
+
 def check_and_update_listings(scraper: Scraper, listings: list[Listing],
                               published_listings: list[WebElement] | None = None) -> None:
     if not listings:
@@ -32,7 +60,12 @@ def check_and_update_listings(scraper: Scraper, listings: list[Listing],
         # Check listing
         # if it should be removed - remove listing
         # otherwise continue and don't post it second time
-        published_listing_element = find_published_listing_element(scraper=scraper, listing_title=listing.title)
+        published_listing_element = scraper.find_element(selector=XPATH.selling_listing_container(listing.title),
+                                                         by=By.XPATH,
+                                                         exit_on_missing_element=False)
+        if not published_listing_element:
+            published_listing_element = find_listing_by_title(scraper=scraper, title=listing.title)
+
         if published_listing_element:
             published_listing = get_published_listing(
                 scraper=scraper,
@@ -89,7 +122,9 @@ def check_and_remove_listings(scraper: Scraper,
 def find_all_published_listing_elements(scraper: Scraper) -> list[WebElement]:
     # Check the page and if it wrong page try go to correct page
     container_element_selector = "//div[translate(@aria-label, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'collection of your marketplace items']"
-    container_element = scraper.find_element_by_xpath(container_element_selector)
+    container_element = scraper.find_element(selector=container_element_selector,
+                                             by=By.XPATH,
+                                             exit_on_missing_element=False)
     if not container_element:
         scraper.go_to_page(PAGES['selling'])
 
@@ -108,10 +143,6 @@ def get_all_published_listings(scraper: Scraper,
         result.append(listing)
 
     return result
-
-
-def find_published_listing_element(scraper: Scraper, listing_title: str) -> WebElement | None:
-    return find_listing_by_title(scraper=scraper, title=listing_title)
 
 
 def get_published_listing(scraper: Scraper,
@@ -178,13 +209,34 @@ def get_published_listing(scraper: Scraper,
     listing.published_date = published_date
 
     if extended_info:
-        listing_element = find_listing_by_title(scraper=scraper, title=title)
-        if listing_element:
-            listing_element.click()
+        listing_container_selector = XPATH.selling_listing_container(title)
+        listing_container = scraper.find_element(listing_container_selector,
+                                                 by=By.XPATH,
+                                                 exit_on_missing_element=False)
+        if listing_container:
+            scraper.scroll_to_element(listing_container_selector,
+                                      by=By.XPATH,
+                                      exit_on_missing_element=False)
+        else:
+            listing_container = find_listing_by_title(scraper=scraper, title=title)
+
+        if listing_container:
+
+            listing_clickable_element_selector = XPATH.selling_listing_container_clickable_element(title)
+            listing_clickable_element = scraper.find_element(listing_clickable_element_selector,
+                                                             by=By.XPATH,
+                                                             exit_on_missing_element=False)
+            if listing_clickable_element:
+                scraper.element_click(listing_clickable_element_selector,
+                                      by=By.XPATH,
+                                      exit_on_missing_element=False)
+            else:
+                listing_container.click()
 
             listing_link_element_selector = f'.//a[contains(@href, "marketplace/item") and .//span[translate(text(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "{title.lower()}"]]'
-            listing_link_element = scraper.find_element_by_xpath(
-                xpath=listing_link_element_selector,
+            listing_link_element = scraper.find_element(
+                selector=listing_link_element_selector,
+                by=By.XPATH,
                 exit_on_missing_element=False
             )
             if listing_link_element:
@@ -199,8 +251,9 @@ def get_published_listing(scraper: Scraper,
                 xpath_mileage_element = '//div/div[2]/span[contains(translate(., "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "driven")]'
 
                 # Get price
-                price_element = scraper.find_element_by_xpath(
-                    xpath=f'{xpath_element_with_info}{xpath_element_price}',
+                price_element = scraper.find_element(
+                    selector=f'{xpath_element_with_info}{xpath_element_price}',
+                    by=By.XPATH,
                     exit_on_missing_element=False
                 )
                 if price_element:
@@ -208,14 +261,16 @@ def get_published_listing(scraper: Scraper,
                     listing.price = price
 
                 # Get description
-                description_see_more_element = scraper.find_element_by_xpath(
-                    xpath=f'{xpath_element_with_info}{xpath_element_description_see_more}',
+                description_see_more_element = scraper.find_element(
+                    selector=f'{xpath_element_with_info}{xpath_element_description_see_more}',
+                    by=By.XPATH,
                     exit_on_missing_element=False
                 )
                 if description_see_more_element:
                     description_see_more_element.click()
-                    description_element = scraper.find_element_by_xpath(
-                        xpath=f'{xpath_element_with_info}{xpath_element_description}',
+                    description_element = scraper.find_element(
+                        selector=f'{xpath_element_with_info}{xpath_element_description}',
+                        by=By.XPATH,
                         exit_on_missing_element=False
                     )
                     if description_element:
@@ -226,8 +281,9 @@ def get_published_listing(scraper: Scraper,
                         listing.description = description_text
 
                 # Get mileage
-                mileage_element = scraper.find_element_by_xpath(
-                    xpath=f'{xpath_element_with_info}{xpath_mileage_element}',
+                mileage_element = scraper.find_element(
+                    selector=f'{xpath_element_with_info}{xpath_mileage_element}',
+                    by=By.XPATH,
                     exit_on_missing_element=False
                 )
                 if mileage_element:
@@ -235,7 +291,9 @@ def get_published_listing(scraper: Scraper,
                     listing.mileage = mileage
 
                 # Close listing detailed control panel
-                close_button_selector = '//div/div[3]/div[1]/div[translate(@aria-label, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "close"]'
+                close_button_selector = (f'//*[{XPATH.translate_eq_expr("close", "@aria-label")} '
+                                         f'and {XPATH.translate_eq_expr("false", "@aria-hidden")} '
+                                         f'and {XPATH.translate_eq_expr("button", "@role")}]')
                 close_button = scraper.find_element(selector=close_button_selector,
                                                     by=By.XPATH,
                                                     exit_on_missing_element=False)
@@ -248,7 +306,9 @@ def get_published_listing(scraper: Scraper,
                     scraper.send_key(Keys.ESCAPE)
 
             # Close listing control window
-            close_button_selector = '//div/div[2]/div[translate(@aria-label, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "close"]'
+            close_button_selector = (f'//*[{XPATH.translate_eq_expr("close", "@aria-label")} '
+                                     f'and {XPATH.translate_eq_expr("0", "@tabindex")} '
+                                     f'and {XPATH.translate_eq_expr("button", "@role")}]')
             close_button = scraper.find_element(selector=close_button_selector,
                                                 by=By.XPATH,
                                                 exit_on_missing_element=False)
@@ -302,15 +362,13 @@ def remove_published_listing(scraper: Scraper, published_listing: PublishedListi
 
 
 def publish_listing(data: Listing, scraper: Scraper):
-    listing_type = 'vehicle'
-
     # Find and click listing create button
     create_listing_button_selector = 'div[aria-label="Marketplace sidebar"] a[aria-label="Create new listing"]'
     create_listing_button = scraper.find_element(selector=create_listing_button_selector,
                                                  exit_on_missing_element=False,
                                                  wait_element_time=20)
     if create_listing_button:
-        scraper.element_click(selector=create_listing_button_selector, use_cursor=True)
+        scraper.element_click(selector=create_listing_button_selector, exit_on_missing_element=False, use_cursor=True)
     else:
         scraper.go_to_page(PAGES['create_new_listing'])
 
@@ -329,14 +387,85 @@ def publish_listing(data: Listing, scraper: Scraper):
     # Add images to the listing
     scraper.input_file_add_files('input[accept="image/*,image/heif,image/heic"]', images_path)
 
-    # Add specific fields based on the listing_type
-    function_name = 'add_fields_for_' + listing_type
-    # Call function by name dynamically
-    globals()[function_name](data, scraper)
+    if data.vehicle_type:
+        element_selector = '//span[text()="Vehicle type"]'
+        element = scraper.find_element(selector=element_selector, by=By.XPATH, exit_on_missing_element=False)
+        if element:
+            scraper.scroll_to_element(selector=element_selector, by=By.XPATH, exit_on_missing_element=False)
+            scraper.element_click(selector='//span[text()="Vehicle type"]', by=By.XPATH, exit_on_missing_element=False,
+                                  use_cursor=True)
+            scraper.element_click(selector=f'//span[text()="{str(data.vehicle_type)}"]', by=By.XPATH,
+                                  exit_on_missing_element=False, use_cursor=True)
+
+    if data.year:
+        scraper.scroll_to_element_by_xpath('//span[text()="Year"]')
+        scraper.element_click(selector='//span[text()="Year"]', by=By.XPATH, exit_on_missing_element=False,
+                              use_cursor=True)
+        scraper.element_click(selector=f'//span[text()="{str(data.year)}"]', by=By.XPATH, exit_on_missing_element=False,
+                              use_cursor=True)
+
+    if data.make:
+        scraper.scroll_to_element_by_xpath('//span[text()="Make"]')
+        scraper.element_click(selector='//span[text()="Make"]', by=By.XPATH, exit_on_missing_element=False,
+                              use_cursor=True)
+        scraper.element_click(
+            selector=f"//span[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '{data.make.lower()}')]",
+            by=By.XPATH, exit_on_missing_element=False, use_cursor=True)
+
+    if data.model:
+        scraper.scroll_to_element_by_xpath('//span[text()="Model"]/following-sibling::input[1]')
+        scraper.element_send_keys_by_xpath('//span[text()="Model"]/following-sibling::input[1]', data.model)
+
+    if data.mileage:
+        scraper.scroll_to_element_by_xpath('//span[text()="Mileage"]/following-sibling::input[1]')
+        scraper.element_send_keys_by_xpath('//span[text()="Mileage"]/following-sibling::input[1]', str(data.mileage))
+
+    if data.body_type:
+        scraper.scroll_to_element_by_xpath('//span[text()="Body style"]')
+        scraper.element_click(selector='//span[text()="Body style"]', by=By.XPATH, exit_on_missing_element=False,
+                              use_cursor=True)
+        scraper.element_click(selector=f'//span[text()="{str(data.body_type)}"]', by=By.XPATH, exit_on_missing_element=False,
+                              use_cursor=True)
+
+    if data.exterior_color:
+        scraper.scroll_to_element_by_xpath('//span[text()="Exterior color"]')
+        scraper.element_click(selector='//span[text()="Exterior color"]', by=By.XPATH, exit_on_missing_element=False,
+                              use_cursor=True)
+        scraper.element_click(selector=f'//div/div/div/div/span[text()="{str(data.exterior_color)}"]', by=By.XPATH, exit_on_missing_element=False,
+                              use_cursor=True)
+
+    if data.interior_color:
+        scraper.scroll_to_element_by_xpath('//span[text()="Interior color"]')
+        scraper.element_click(selector='//span[text()="Interior color"]', by=By.XPATH, exit_on_missing_element=False,
+                              use_cursor=True)
+        scraper.element_click(selector=f'//div/div/div/div/span[text()="{str(data.interior_color)}"]', by=By.XPATH, exit_on_missing_element=False,
+                              use_cursor=True)
+
+    if data.vehicle_condition:
+        scraper.scroll_to_element_by_xpath('//span[text()="Vehicle condition"]')
+        scraper.element_click(selector='//span[text()="Vehicle condition"]', by=By.XPATH, exit_on_missing_element=False,
+                              use_cursor=True)
+        scraper.element_click(selector=f'//span[text()="{str(data.vehicle_condition)}"]', by=By.XPATH, exit_on_missing_element=False,
+                              use_cursor=True)
+
+    if data.fuel_type:
+        scraper.scroll_to_element_by_xpath('//span[text()="Fuel type"]')
+        scraper.element_click(selector='//span[text()="Fuel type"]', by=By.XPATH, exit_on_missing_element=False,
+                              use_cursor=True)
+        scraper.element_click(selector=f'//div/div/div/div/div/span[text()="{str(data.fuel_type)}"]', by=By.XPATH, exit_on_missing_element=False,
+                              use_cursor=True)
+
+    if data.transmission:
+        scraper.scroll_to_element_by_xpath('//span[text()="Transmission"]')
+        scraper.element_click(selector='//span[text()="Transmission"]', by=By.XPATH, exit_on_missing_element=False,
+                              use_cursor=True)
+        scraper.element_click(selector=f'//span[text()="{str(data.transmission)}"]', by=By.XPATH, exit_on_missing_element=False,
+                              use_cursor=True)
 
     if data.price:
         scraper.scroll_to_element_by_xpath('//span[text()="Price"]/following-sibling::input[1]')
-        scraper.element_send_keys_by_xpath('//span[text()="Price"]/following-sibling::input[1]', int(data.price))
+        scraper.scroll_to_element_by_xpath('//span[text()="Price"]/following-sibling::input[1]')
+        scraper.element_send_keys_by_xpath('//span[text()="Price"]/following-sibling::input[1]', str(int(data.price)))
 
     if data.description:
         description = data.description
@@ -424,74 +553,6 @@ def generate_multiple_images_path(path, images):
     return images_path
 
 
-# Add specific fields for listing from type vehicle
-def add_fields_for_vehicle(data: Listing, scraper):
-    if data.vehicle_type:
-        scraper.element_click_by_xpath('//span[text()="Vehicle type"]')
-        scraper.element_click_by_xpath(f'//span[text()="{str(data.vehicle_type)}"]')
-
-    if data.year:
-        scraper.scroll_to_element_by_xpath('//span[text()="Year"]')
-        scraper.element_click_by_xpath('//span[text()="Year"]')
-        scraper.element_click_by_xpath(f'//span[text()="{str(data.year)}"]')
-
-    if data.make:
-        scraper.element_click_by_xpath('//span[text()="Make"]')
-        scraper.element_click_by_xpath(
-            f"//span[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '{data.make.lower()}')]")
-
-    if data.model:
-        scraper.element_send_keys_by_xpath('//span[text()="Model"]/following-sibling::input[1]', data.model)
-
-    if data.mileage:
-        scraper.element_send_keys_by_xpath('//span[text()="Mileage"]/following-sibling::input[1]', data.mileage)
-
-    if data.body_type:
-        scraper.scroll_to_element_by_xpath('//span[text()="Body style"]')
-        scraper.element_click_by_xpath('//span[text()="Body style"]')
-        scraper.element_click_by_xpath(f'//span[text()="{str(data.body_type)}"]')
-
-    if data.exterior_color:
-        scraper.element_click_by_xpath('//span[text()="Exterior color"]')
-        scraper.element_click_by_xpath(f'//div/div/div/div/span[text()="{str(data.exterior_color)}"]')
-
-    if data.interior_color:
-        scraper.element_click_by_xpath('//span[text()="Interior color"]')
-        scraper.element_click_by_xpath(f'//div/div/div/div/span[text()="{str(data.interior_color)}"]')
-
-    if data.vehicle_condition:
-        scraper.element_click_by_xpath('//span[text()="Vehicle condition"]')
-        scraper.element_click_by_xpath(f'//span[text()="{str(data.vehicle_condition)}"]')
-
-    if data.fuel_type:
-        scraper.element_click_by_xpath('//span[text()="Fuel type"]')
-        scraper.element_click_by_xpath(f'//div/div/div/div/div/span[text()="{str(data.fuel_type)}"]')
-
-    if data.transmission:
-        scraper.element_click_by_xpath('//span[text()="Transmission"]')
-        scraper.element_click_by_xpath(f'//span[text()="{str(data.transmission)}"]')
-
-
-# Add specific fields for listing from type item
-def add_fields_for_item(data, scraper):
-    scraper.element_send_keys_by_xpath('//span[text()="Title"]/following-sibling::input[1]', data['Title'])
-
-    # Scroll to "Category" select field
-    scraper.scroll_to_element_by_xpath('//span[text()="Category"]')
-    # Expand category select
-    scraper.element_click_by_xpath('//span[text()="Category"]')
-    # Select category
-    scraper.element_click_by_xpath('//span[text()="' + data['Category'] + '"]')
-
-    # Expand category select
-    scraper.element_click_by_xpath('//div/span[text()="Condition"]')
-    # Select category
-    scraper.element_click_by_xpath('//span[@dir="auto"][text()="' + data['Condition'] + '"]')
-
-    if data['Category'] == 'Sports & Outdoors':
-        scraper.element_send_keys_by_xpath('//span[text()="Brand"]/following-sibling::input[1]', data['Brand'])
-
-
 def add_listing_to_multiple_groups(data: Listing, scraper: Scraper) -> None:
     # Create an array for group names by splitting the string by this symbol ";"
     group_names = define_groups_for_posting(data)
@@ -502,7 +563,7 @@ def add_listing_to_multiple_groups(data: Listing, scraper: Scraper) -> None:
     for group_name in group_names:
         if not group_name:
             continue
-        group_element_selector = f'//span[contains(translate(text(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "{group_name.lower()}")]'
+        group_element_selector = f'//span[{XPATH.translate_cont_expr(group_name, "text()")}]'
         group_element = scraper.find_element(selector=group_element_selector,
                                              by=By.XPATH,
                                              exit_on_missing_element=False)
@@ -564,10 +625,12 @@ def post_listing_to_multiple_groups(listing: Listing, scraper: Scraper) -> None:
 
         # Remove current text from this input
         search_input_selector = '//*[translate(@aria-label, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "search for groups"]'
-        scraper.element_delete_text(selector=search_input_selector, by=By.XPATH)
+        scraper.element_delete_text(selector=search_input_selector, by=By.XPATH, exit_on_missing_element=False)
 
         # Enter the title of the group in the input for search
-        scraper.element_send_keys(search_input_selector, group_name[:51])
+        scraper.element_send_keys(selector=search_input_selector,
+                                  by=By.XPATH,
+                                  text=group_name[:51])
 
         # Try to find group element for posting
         group_element_selector = f'//span[contains(translate(text(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "{group_name.lower()}")]'
@@ -592,7 +655,9 @@ def post_listing_to_multiple_groups(listing: Listing, scraper: Scraper) -> None:
                                                        exit_on_missing_element=False,
                                                        wait_element_time=3)
         if post_text_field_element:
-            scraper.element_send_keys(selector=post_text_field_element_selector, text=listing.description)
+            scraper.element_send_keys(selector=post_text_field_element_selector,
+                                      by=By.XPATH,
+                                      text=listing.description)
         else:
             post_text_field_element_selector = '//*[translate(@aria-label, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "write something..."]'
             post_text_field_element = scraper.find_element(selector=post_text_field_element_selector,
@@ -600,7 +665,9 @@ def post_listing_to_multiple_groups(listing: Listing, scraper: Scraper) -> None:
                                                            exit_on_missing_element=False,
                                                            wait_element_time=3)
             if post_text_field_element:
-                scraper.element_send_keys(selector=post_text_field_element_selector, text=listing.description)
+                scraper.element_send_keys(selector=post_text_field_element_selector,
+                                          by=By.XPATH,
+                                          text=listing.description)
             else:
                 system_logger.warning(f'Listing: {listing.title}({listing.vin}) '
                                       f'Can not find field element for insert post text. '
@@ -643,33 +710,33 @@ def define_groups_for_posting(listing: Listing) -> list[str]:
         group_names_from_config = [g.strip() for g in group_names_from_config.split(';')]
         group_names.extend(group_names_from_config)
 
-    # Clean group names
-    cleaned_group_names = []
-    for name in group_names:
-        clean = re.sub(r'[^\w\s\-]', '', name, flags=re.UNICODE).strip()
-        if clean:
-            cleaned_group_names.append(clean)
-
-    return cleaned_group_names
+    return group_names
 
 
 def find_listing_by_title(scraper: Scraper, title: str) -> WebElement | None:
     # Find and check search input field
-    search_input_selector = 'input[placeholder="Search your listings"]'
-    search_input = scraper.find_element(selector=search_input_selector, exit_on_missing_element=False)
+    search_input_selector = XPATH.selling_search_input()
+    search_input = scraper.find_element(selector=search_input_selector,
+                                        by=By.XPATH,
+                                        exit_on_missing_element=False)
     if not search_input:
         system_logger.error(f'Cant find element {search_input_selector}')
         return None
 
     # Clear input field for searching listings before entering title
-    scraper.element_delete_text(search_input_selector)
+    scraper.element_delete_text(selector=search_input_selector,
+                                by=By.XPATH,
+                                exit_on_missing_element=False)
 
     # Enter the title of the listing in the input for search
-    scraper.element_send_keys(selector=search_input_selector, text=title)
+    scraper.element_send_keys(selector=search_input_selector,
+                              by=By.XPATH,
+                              text=title,
+                              exit_on_missing_element=False)
 
-    xpath = f"//div[./div/div/div/div[2]/div/div[translate(@aria-label, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ ', 'abcdefghijklmnopqrstuvwxyz') = '{normalize_title_for_compare(title)}']]"
-    return scraper.find_element_by_xpath(
-        xpath=xpath,
+    return scraper.find_element(
+        selector=XPATH.selling_listing_container(title),
+        by=By.XPATH,
         exit_on_missing_element=False,
         wait_element_time=10)
 

@@ -28,7 +28,7 @@ def launch_browser_and_open_gui():
     system_logger.info('Run browser with program UI')
 
     scraper_driver_manager = ScraperDriverManager()
-    scraper_driver_manager.create_tab('gui', True)
+    scraper_driver_manager.create_tab('gui')
     scraper_driver_manager.driver.get('http://localhost:8080')
 
 
@@ -41,7 +41,7 @@ def launch_facebook_marketplace_bot():
     def run_marketplace_bot():
         global scraper, scraper_driver_manager
 
-        scraper_driver_manager.create_tab('facebook', True)
+        scraper_driver_manager.create_tab('facebook')
         scraper = Scraper(driver=scraper_driver_manager.driver, url='https://facebook.com/')
         scraper.add_login_functionality(login_url='https://facebook.com/',
                                         is_logged_in_selector='svg[aria-label="Your profile"]',
