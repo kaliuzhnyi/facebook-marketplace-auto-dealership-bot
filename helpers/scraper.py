@@ -186,7 +186,8 @@ class Scraper:
         # Refresh the site url with the loaded cookies so the user will be logged in
         self.driver.get(page)
 
-    def find_element(self, selector: str,
+    def find_element(self,
+                     selector: str | WebElement,
                      by: str = By.CSS_SELECTOR,
                      condition=EC.element_to_be_clickable,
                      exit_on_missing_element: bool = True,
@@ -201,6 +202,9 @@ class Scraper:
         :param exit_on_missing_element: If True, raises RuntimeError when the element is not found
         :return: WebElement if found, otherwise None (or raises if exit_on_missing_element=True)
         """
+
+        if isinstance(selector, WebElement):
+            return selector
 
         wait_element_time = wait_element_time or self.wait_element_time
         logger.system_logger.debug(f'Trying to find element: {by}="{selector}", timeout={wait_element_time}s')
@@ -241,7 +245,7 @@ class Scraper:
         return elements
 
     def element_click(self,
-                      selector: str,
+                      selector: str | WebElement,
                       by: str = By.CSS_SELECTOR,
                       delay: bool = True,
                       exit_on_missing_element: bool = True,
@@ -382,7 +386,7 @@ class Scraper:
             print('Warning when waiting the element with xpath "' + xpath + '" to be invisible')
 
     def scroll_to_element(self,
-                          selector: str,
+                          selector: str | WebElement,
                           by: str = By.CSS_SELECTOR,
                           exit_on_missing_element: bool = True) -> None:
         """
