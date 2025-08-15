@@ -1,13 +1,15 @@
 import re
 import unicodedata
+from collections import deque
 from datetime import datetime
 
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support import expected_conditions as EC
 
 from config import CONFIG
-from helpers.model import Listing, PublishedListing
+from helpers.model import Listing, PublishedListing, FuelType
 from helpers.scraper import Scraper
 from logger import system_logger
 
@@ -47,50 +49,62 @@ class XPATH:
 
 
 def check_and_update_listings(scraper: Scraper, listings: list[Listing],
-                              published_listings: list[WebElement] | None = None) -> None:
+                              published_listings: list[WebElement] | None = None,
+                              listings_limit: int | None = None,
+                              result: list[Listing] | None = None) -> None:
     if not listings:
         return
 
-    # Check if listing is already listed and remove it then publish it like a new one
-    for listing in listings:
+    if not result:
+        result = []
+
+    listings_attempts_limit = 2
+    listings_counter = 0
+    listings_queue = deque((listing, 0) for listing in listings)
+    while listings_queue:
+        listing, attempts = listings_queue.popleft()
 
         if not listing.price:
             continue
 
-        # Check listing
+        # Check and remove listing
         # if it should be removed - remove listing
         # otherwise continue and don't post it second time
-        published_listing_element = scraper.find_element(selector=XPATH.selling_listing_container(listing.title),
-                                                         by=By.XPATH,
-                                                         exit_on_missing_element=False)
-        if not published_listing_element:
-            published_listing_element = find_listing_by_title(scraper=scraper, title=listing.title)
+        published_listing_element = (
+                scraper.find_element(selector=XPATH.selling_listing_container(listing.title),
+                                     by=By.XPATH,
+                                     exit_on_missing_element=False)
+                or find_listing_by_title(scraper=scraper,
+                                         title=listing.title)
+        )
 
         if published_listing_element:
-            published_listing = get_published_listing(
-                scraper=scraper,
-                published_listing_element=published_listing_element,
-                extended_info=True)
+            published_listing = get_published_listing(scraper=scraper,
+                                                      published_listing_element=published_listing_element,
+                                                      extended_info=True)
 
             if (listing.price != published_listing.price
                     or listing.mileage != published_listing.mileage
+                    or listing.fuel_type != published_listing.fuel_type
                     or not compare_text(listing.description, published_listing.description)):
-                remove_published_listing(scraper=scraper, published_listing=published_listing)
+                remove_published_listing(scraper=scraper,
+                                         published_listing=published_listing)
             else:
                 continue
 
-        # Publish the listing in marketplace
-
+        # Publishing listing
         is_published = publish_listing(data=listing, scraper=scraper)
         if is_published:
-            post_listing_to_multiple_groups(listing=listing, scraper=scraper)
+            listings_counter += 1
+            result.append(listing)
+            post_listing_to_groups(listing=listing, scraper=scraper)
+        else:
+            if attempts < listings_attempts_limit:
+                listings_queue.appendleft((listing, attempts + 1))
 
-        # Make a random delay between publishing
-        scraper.wait_listing_random_time()
-
-        # If the listing is not published from the first time, try again
-        if not is_published:
-            publish_listing(data=listing, scraper=scraper)
+        # Make pause
+        if listings_queue or (listings_limit and listings_counter < listings_limit):
+            scraper.wait_listing_random_time()
 
 
 def check_and_remove_listings(scraper: Scraper,
@@ -102,6 +116,10 @@ def check_and_remove_listings(scraper: Scraper,
                                                         published_listing_elements=published_listing_elements)
 
     for published_listing in published_listings:
+        if (not published_listing.title or
+                not published_listing.published_date):
+            continue
+
         # Check conditions when listing should be removed
 
         # Try to find listing in database, if not present the listing should be removed
@@ -209,36 +227,11 @@ def get_published_listing(scraper: Scraper,
     listing.published_date = published_date
 
     if extended_info:
-        listing_container_selector = XPATH.selling_listing_container(title)
-        listing_container = scraper.find_element(listing_container_selector,
-                                                 by=By.XPATH,
-                                                 exit_on_missing_element=False)
-        if listing_container:
-            scraper.scroll_to_element(listing_container_selector,
-                                      by=By.XPATH,
-                                      exit_on_missing_element=False)
-        else:
-            listing_container = find_listing_by_title(scraper=scraper, title=title)
-
-        if listing_container:
-
-            listing_clickable_element_selector = XPATH.selling_listing_container_clickable_element(title)
-            listing_clickable_element = scraper.find_element(listing_clickable_element_selector,
-                                                             by=By.XPATH,
-                                                             exit_on_missing_element=False)
-            if listing_clickable_element:
-                scraper.element_click(listing_clickable_element_selector,
-                                      by=By.XPATH,
-                                      exit_on_missing_element=False)
-            else:
-                listing_container.click()
-
+        if click_listing_by_title(scraper=scraper, title=title):
             listing_link_element_selector = f'.//a[contains(@href, "marketplace/item") and .//span[translate(text(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "{title.lower()}"]]'
-            listing_link_element = scraper.find_element(
-                selector=listing_link_element_selector,
-                by=By.XPATH,
-                exit_on_missing_element=False
-            )
+            listing_link_element = scraper.find_element(selector=listing_link_element_selector,
+                                                        by=By.XPATH,
+                                                        exit_on_missing_element=False)
             if listing_link_element:
                 scraper.element_click(selector=listing_link_element_selector, by=By.XPATH)
 
@@ -249,6 +242,7 @@ def get_published_listing(scraper: Scraper,
                 xpath_element_description_see_less = '//span[text()="See less"]'
                 xpath_element_description = f'//span[.{xpath_element_description_see_less} or .{xpath_element_description_see_more}]'
                 xpath_mileage_element = '//div/div[2]/span[contains(translate(., "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "driven")]'
+                xpath_fuel_type_element = '//div/div[2]/span[contains(translate(., "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "fuel type")]'
 
                 # Get price
                 price_element = scraper.find_element(
@@ -290,6 +284,16 @@ def get_published_listing(scraper: Scraper,
                     mileage = int(re.sub(r"\D", "", mileage_element.text))
                     listing.mileage = mileage
 
+                # Get fuel type
+                fuel_type_element = scraper.find_element(
+                    selector=f'{xpath_element_with_info}{xpath_fuel_type_element}',
+                    by=By.XPATH,
+                    exit_on_missing_element=False
+                )
+                if fuel_type_element:
+                    fuel_type = fuel_type_element.text.lower().replace("fuel type:", "").strip()
+                    listing.fuel_type = FuelType.from_str(fuel_type)
+
                 # Close listing detailed control panel
                 close_button_selector = (f'//*[{XPATH.translate_eq_expr("close", "@aria-label")} '
                                          f'and {XPATH.translate_eq_expr("false", "@aria-hidden")} '
@@ -324,38 +328,37 @@ def get_published_listing(scraper: Scraper,
 
 
 def remove_published_listing(scraper: Scraper, published_listing: PublishedListing) -> None:
-    listing_title = find_listing_by_title(
-        scraper=scraper,
-        title=published_listing.title)
-    if not listing_title:
+    if not click_listing_by_title(scraper=scraper, title=published_listing.title):
         return
-
-    # Click on listing to open listing card
-    listing_title.click()
 
     # Click on the delete listing button
-    delete_element_selector = "//div[not(@role='gridcell')]/div[translate(@aria-label, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'delete' and @tabindex='0']"
-    delete_element = scraper.find_element(
-        selector=delete_element_selector,
-        by=By.XPATH,
-        wait_element_time=3
-    )
+    delete_element_selector = (f"//div[not(@role='gridcell')]"
+                               f"/div[{XPATH.translate_eq_expr('delete', '@aria-label')} and @tabindex='0']")
+    delete_element = scraper.find_element_and_click(selector=delete_element_selector,
+                                                    by=By.XPATH,
+                                                    exit_on_missing_element=False)
     if not delete_element:
+        scraper.send_key(Keys.ESCAPE)
         return
-
-    scraper.element_click(selector=delete_element_selector, by=By.XPATH)
 
     # Click on confirm button to delete
-    confirm_delete_element_selector = "//div[translate(@aria-label, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'delete listing']//div[translate(@aria-label, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'delete' and @tabindex='0']"
-    confirm_delete_element = scraper.find_element(
-        selector=confirm_delete_element_selector,
-        by=By.XPATH,
-        wait_element_time=3
-    )
+    confirm_delete_element_selector = (f'//div[{XPATH.translate_eq_expr("delete listing", "@aria-label")}]'
+                                       f'//div[{XPATH.translate_eq_expr("delete", "@aria-label")} and @tabindex="0"]')
+    confirm_delete_element = scraper.find_element_and_click(selector=confirm_delete_element_selector,
+                                                            by=By.XPATH,
+                                                            exit_on_missing_element=False)
     if not confirm_delete_element:
-        return
+        confirm_delete_element_selector = (f'//div[{XPATH.translate_eq_expr("dialog", "@aria-label")}]'
+                                           f'//div[{XPATH.translate_eq_expr("delete", "@aria-label")} and @tabindex="0"] and @role="button" and not(.//i)')
+        confirm_delete_element = scraper.find_element_and_click(selector=confirm_delete_element_selector,
+                                                                by=By.XPATH,
+                                                                exit_on_missing_element=False)
 
-    scraper.element_click(selector=confirm_delete_element_selector, by=By.XPATH)
+    if not confirm_delete_element:
+        scraper.send_key(Keys.ESCAPE)
+        scraper.wait_action_random_time()
+        scraper.send_key(Keys.ESCAPE)
+        return
 
     # Wait until the popup is closed
     scraper.element_wait_to_be_invisible('div[aria-label="Your Listing"]')
@@ -414,58 +417,72 @@ def publish_listing(data: Listing, scraper: Scraper):
 
     if data.model:
         scraper.scroll_to_element_by_xpath('//span[text()="Model"]/following-sibling::input[1]')
-        scraper.element_send_keys_by_xpath('//span[text()="Model"]/following-sibling::input[1]', data.model)
+        scraper.element_send_keys(selector='//span[text()="Model"]/following-sibling::input[1]',
+                                  by=By.XPATH,
+                                  exit_on_missing_element=False,
+                                  text=data.model)
 
     if data.mileage:
         scraper.scroll_to_element_by_xpath('//span[text()="Mileage"]/following-sibling::input[1]')
-        scraper.element_send_keys_by_xpath('//span[text()="Mileage"]/following-sibling::input[1]', str(data.mileage))
+        scraper.element_send_keys(selector='//span[text()="Mileage"]/following-sibling::input[1]',
+                                  by=By.XPATH,
+                                  exit_on_missing_element=False,
+                                  text=str(data.mileage))
 
     if data.body_type:
         scraper.scroll_to_element_by_xpath('//span[text()="Body style"]')
         scraper.element_click(selector='//span[text()="Body style"]', by=By.XPATH, exit_on_missing_element=False,
                               use_cursor=True)
-        scraper.element_click(selector=f'//span[text()="{str(data.body_type)}"]', by=By.XPATH, exit_on_missing_element=False,
+        scraper.element_click(selector=f'//span[text()="{str(data.body_type)}"]', by=By.XPATH,
+                              exit_on_missing_element=False,
                               use_cursor=True)
 
     if data.exterior_color:
         scraper.scroll_to_element_by_xpath('//span[text()="Exterior color"]')
         scraper.element_click(selector='//span[text()="Exterior color"]', by=By.XPATH, exit_on_missing_element=False,
                               use_cursor=True)
-        scraper.element_click(selector=f'//div/div/div/div/span[text()="{str(data.exterior_color)}"]', by=By.XPATH, exit_on_missing_element=False,
+        scraper.element_click(selector=f'//div/div/div/div/span[text()="{str(data.exterior_color)}"]', by=By.XPATH,
+                              exit_on_missing_element=False,
                               use_cursor=True)
 
     if data.interior_color:
         scraper.scroll_to_element_by_xpath('//span[text()="Interior color"]')
         scraper.element_click(selector='//span[text()="Interior color"]', by=By.XPATH, exit_on_missing_element=False,
                               use_cursor=True)
-        scraper.element_click(selector=f'//div/div/div/div/span[text()="{str(data.interior_color)}"]', by=By.XPATH, exit_on_missing_element=False,
+        scraper.element_click(selector=f'//div/div/div/div/span[text()="{str(data.interior_color)}"]', by=By.XPATH,
+                              exit_on_missing_element=False,
                               use_cursor=True)
 
     if data.vehicle_condition:
         scraper.scroll_to_element_by_xpath('//span[text()="Vehicle condition"]')
         scraper.element_click(selector='//span[text()="Vehicle condition"]', by=By.XPATH, exit_on_missing_element=False,
                               use_cursor=True)
-        scraper.element_click(selector=f'//span[text()="{str(data.vehicle_condition)}"]', by=By.XPATH, exit_on_missing_element=False,
+        scraper.element_click(selector=f'//span[text()="{str(data.vehicle_condition)}"]', by=By.XPATH,
+                              exit_on_missing_element=False,
                               use_cursor=True)
 
     if data.fuel_type:
         scraper.scroll_to_element_by_xpath('//span[text()="Fuel type"]')
         scraper.element_click(selector='//span[text()="Fuel type"]', by=By.XPATH, exit_on_missing_element=False,
                               use_cursor=True)
-        scraper.element_click(selector=f'//div/div/div/div/div/span[text()="{str(data.fuel_type)}"]', by=By.XPATH, exit_on_missing_element=False,
+        scraper.element_click(selector=f'//div/div/div/div/div/span[text()="{str(data.fuel_type)}"]', by=By.XPATH,
+                              exit_on_missing_element=False,
                               use_cursor=True)
 
     if data.transmission:
         scraper.scroll_to_element_by_xpath('//span[text()="Transmission"]')
         scraper.element_click(selector='//span[text()="Transmission"]', by=By.XPATH, exit_on_missing_element=False,
                               use_cursor=True)
-        scraper.element_click(selector=f'//span[text()="{str(data.transmission)}"]', by=By.XPATH, exit_on_missing_element=False,
+        scraper.element_click(selector=f'//span[text()="{str(data.transmission)}"]', by=By.XPATH,
+                              exit_on_missing_element=False,
                               use_cursor=True)
 
     if data.price:
         scraper.scroll_to_element_by_xpath('//span[text()="Price"]/following-sibling::input[1]')
-        scraper.scroll_to_element_by_xpath('//span[text()="Price"]/following-sibling::input[1]')
-        scraper.element_send_keys_by_xpath('//span[text()="Price"]/following-sibling::input[1]', str(int(data.price)))
+        scraper.element_send_keys(selector='//span[text()="Price"]/following-sibling::input[1]',
+                                  by=By.XPATH,
+                                  exit_on_missing_element=False,
+                                  text=str(int(data.price)))
 
     if data.description:
         description = data.description
@@ -477,12 +494,17 @@ def publish_listing(data: Listing, scraper: Scraper):
             description = f"{description}{new_value}"
 
         scraper.scroll_to_element_by_xpath(xpath='//span[text()="Description"]/following-sibling::div/textarea')
-        scraper.element_send_keys_by_xpath(xpath='//span[text()="Description"]/following-sibling::div/textarea',
-                                           text=description)
+        scraper.element_send_keys(selector='//span[text()="Description"]/following-sibling::div/textarea',
+                                  by=By.XPATH,
+                                  exit_on_missing_element=False,
+                                  text=description)
 
     if data.location:
         scraper.scroll_to_element_by_xpath('//span[text()="Location"]/following-sibling::input[1]')
-        scraper.element_send_keys_by_xpath('//span[text()="Location"]/following-sibling::input[1]', data.location)
+        scraper.element_send_keys(selector='//span[text()="Location"]/following-sibling::input[1]',
+                                  by=By.XPATH,
+                                  exit_on_missing_element=False,
+                                  text=data.location)
         scraper.element_click('ul[role="listbox"] li:first-child > div', exit_on_missing_element=False,
                               use_cursor=False)
 
@@ -574,128 +596,117 @@ def add_listing_to_multiple_groups(data: Listing, scraper: Scraper) -> None:
                                   use_cursor=True)
 
 
-def post_listing_to_multiple_groups(listing: Listing, scraper: Scraper) -> None:
+def post_listing_to_groups(listing: Listing, scraper: Scraper) -> None:
     # Create an array for group names by splitting the string by this symbol ";"
     group_names = define_groups_for_posting(listing)
     if not group_names:
         return
 
+    # Wait before starting sharing to groups
+    scraper.wait_random_time(30, 60)
+
     system_logger.info(f'Listing: {listing.title}({listing.vin}) '
                        f'Start posting listing to groups.')
 
-    listing_element = find_listing_by_title(scraper=scraper, title=listing.title)
-    if not listing_element:
-        system_logger.error(f'Listing: {listing.title}({listing.vin}) '
-                            f'Can not find listing element.')
+    if not click_listing_by_title(scraper=scraper, title=listing.title):
         return
 
     # Post in different groups
     for group_name in group_names:
-        # Click on the Share button to the listing that we want to share
-        share_button_selector = f'//*[contains(translate(@aria-label, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "{listing.title.lower()}")]//span[contains(translate(., "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "share")]'
-        share_button = scraper.find_element(selector=share_button_selector,
-                                            by=By.XPATH,
-                                            exit_on_missing_element=False)
-        if not share_button:
-            system_logger.error(f'Listing: {listing.title}({listing.vin}) '
-                                f'Can not find element(share button). '
-                                f'Element selector: {share_button_selector}')
-            continue
+        post_listing_to_group(listing, scraper, group_name)
 
-        scraper.element_click(selector=share_button_selector,
-                              by=By.XPATH,
-                              exit_on_missing_element=False,
-                              use_cursor=True)
 
-        # Click on the Share to a group button
-        share_group_button_selector = '//span[translate(text(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "group"]'
-        share_group_button = scraper.find_element(selector=share_group_button_selector,
+def post_listing_to_group(listing: Listing, scraper: Scraper, group_name: str) -> bool:
+    system_logger.info(f'Listing: {listing.title}({listing.vin}) '
+                       f'Start posting listing to group - "{group_name}".')
+
+    # Click on the Share button to the listing that we want to share
+    share_button_selector = (f'//*[{XPATH.translate_cont_expr(listing.title, "@aria-label")}]'
+                             f'//span[{XPATH.translate_cont_expr("share", ".")}]')
+    share_button = scraper.find_element_and_click(selector=share_button_selector,
                                                   by=By.XPATH,
                                                   exit_on_missing_element=False)
-        if not share_group_button:
-            system_logger.error(f'Listing: {listing.title}({listing.vin}) '
-                                f'Can not find element(share group button). '
-                                f'Element selector: {share_group_button_selector}')
-            continue
+    if not share_button:
+        return False
 
-        scraper.element_click(selector=share_group_button_selector,
+    # Click on the Share to a group button
+    share_group_button_selector = f'//div[@role="button" and .//span[{XPATH.translate_eq_expr("group", "text()")}]]'
+    share_group_button = scraper.find_element_and_click(selector=share_group_button_selector,
+                                                        by=By.XPATH,
+                                                        exit_on_missing_element=False)
+    if not share_group_button:
+        return False
+
+    # Remove current text from this input
+    search_input_selector = f'//*[{XPATH.translate_eq_expr("search for groups", "@aria-label")}]'
+    scraper.element_delete_text(selector=search_input_selector,
+                                by=By.XPATH,
+                                exit_on_missing_element=False)
+
+    # Enter the title of the group in the input for search
+    scraper.element_send_keys(selector=search_input_selector,
                               by=By.XPATH,
-                              exit_on_missing_element=False,
-                              use_cursor=True)
+                              text=group_name[:51])
 
-        # Remove current text from this input
-        search_input_selector = '//*[translate(@aria-label, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "search for groups"]'
-        scraper.element_delete_text(selector=search_input_selector, by=By.XPATH, exit_on_missing_element=False)
+    # Try to find group element for posting
+    group_element_selector = f'//span[{XPATH.translate_cont_expr(group_name, "text()")}]'
+    group_element = scraper.find_element_and_click(selector=group_element_selector,
+                                                   by=By.XPATH,
+                                                   exit_on_missing_element=False)
+    if not group_element:
+        return False
 
-        # Enter the title of the group in the input for search
-        scraper.element_send_keys(selector=search_input_selector,
-                                  by=By.XPATH,
-                                  text=group_name[:51])
-
-        # Try to find group element for posting
-        group_element_selector = f'//span[contains(translate(text(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "{group_name.lower()}")]'
-        group_element = scraper.find_element(selector=group_element_selector,
-                                             by=By.XPATH,
-                                             exit_on_missing_element=False)
-        if not group_element:
-            system_logger.error(f'Listing: {listing.title}({listing.vin}) '
-                                f'Can not find element(group link). '
-                                f'Element selector: {group_element_selector}')
-            continue
-
-        scraper.element_click(selector=group_element_selector,
-                              by=By.XPATH,
-                              exit_on_missing_element=False,
-                              use_cursor=True)
-
-        # Enter text for posting
-        post_text_field_element_selector = '//*[translate(@aria-label, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "create a public post…"]'
+    # Enter text for posting
+    post_text_field_element_selector = f'//*[{XPATH.translate_cont_expr("create a public post", "@aria-placeholder")}]'
+    post_text_field_element = scraper.find_element(selector=post_text_field_element_selector,
+                                                   by=By.XPATH,
+                                                   exit_on_missing_element=False)
+    if not post_text_field_element:
+        post_text_field_element_selector = f'//*[{XPATH.translate_cont_expr("write something", "@aria-label")}]'
         post_text_field_element = scraper.find_element(selector=post_text_field_element_selector,
                                                        by=By.XPATH,
-                                                       exit_on_missing_element=False,
-                                                       wait_element_time=3)
-        if post_text_field_element:
-            scraper.element_send_keys(selector=post_text_field_element_selector,
-                                      by=By.XPATH,
-                                      text=listing.description)
+                                                       exit_on_missing_element=False)
+
+    if post_text_field_element:
+        scraper.element_send_keys(selector=post_text_field_element_selector,
+                                  by=By.XPATH,
+                                  text=listing.description)
+
+    # Try to post listing in group
+    post_button_selector = f'//*[{XPATH.translate_eq_expr("post", "@aria-label")} and not (@aria-disabled)]'
+    post_button = scraper.find_element_and_click(selector=post_button_selector,
+                                                 by=By.XPATH,
+                                                 exit_on_missing_element=False)
+    if not post_button:
+        return False
+
+    # Wait till the post is posted successfully
+    scraper.element_wait_to_be_invisible(selector=f'//*[{XPATH.translate_cont_expr("dialog", "@role")}]',
+                                         by=By.XPATH)
+    scraper.element_wait_to_be_invisible(selector=f'//*[{XPATH.translate_cont_expr("posting", "@aria-label")}]',
+                                         by=By.XPATH)
+
+    success_result_element_text1 = 'shared to your group.'
+    success_result_element_text2 = "thanks for your post! it's been submitted to group admins for approval."
+    success_result_element_selector = (
+        f'//span[{XPATH.translate_eq_expr(success_result_element_text1, "text()")} or '
+        f'{XPATH.translate_eq_expr(success_result_element_text2, "text()")}]')
+    success_result_element = scraper.find_element(selector=success_result_element_selector, by=By.XPATH,
+                                                  condition=EC.visibility_of_element_located,
+                                                  exit_on_missing_element=False, wait_element_time=1)
+    if success_result_element:
+        if success_result_element_text1 in success_result_element.text.lower():
+            system_logger.info(f'Listing: {listing.title}({listing.vin}) '
+                               f'Successfully shared to group {group_name}')
+        elif success_result_element_text2 in success_result_element.text.lower():
+            system_logger.info(f'Listing: {listing.title}({listing.vin}) '
+                               f'Successfully submitted to group({group_name}) admins for approval')
         else:
-            post_text_field_element_selector = '//*[translate(@aria-label, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "write something..."]'
-            post_text_field_element = scraper.find_element(selector=post_text_field_element_selector,
-                                                           by=By.XPATH,
-                                                           exit_on_missing_element=False,
-                                                           wait_element_time=3)
-            if post_text_field_element:
-                scraper.element_send_keys(selector=post_text_field_element_selector,
-                                          by=By.XPATH,
-                                          text=listing.description)
-            else:
-                system_logger.warning(f'Listing: {listing.title}({listing.vin}) '
-                                      f'Can not find field element for insert post text. '
-                                      f'Element selector: {post_text_field_element_selector}')
+            system_logger.info(f'Listing: {listing.title}({listing.vin}) '
+                               f'Successfully shared to group {group_name} or submitted to group({group_name}) admins for approval')
+        return True
 
-        # Try to post listing in group
-        post_button_selector = '//*[translate(@aria-label, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "post" and not (@ aria-disabled)]'
-        post_button = scraper.find_element(selector=post_button_selector,
-                                           by=By.XPATH,
-                                           exit_on_missing_element=False)
-        if not post_button:
-            system_logger.warning(f'Listing: {listing.title}({listing.vin}) '
-                                  f'Can not find button for post listing in group({group_name}). '
-                                  f'Element selector: {post_button_selector}')
-            continue
-
-        scraper.element_click(selector=post_button_selector,
-                              exit_on_missing_element=False,
-                              use_cursor=True)
-
-        # Wait till the post is posted successfully
-        scraper.element_wait_to_be_invisible(selector='[role="dialog"]')
-        scraper.element_wait_to_be_invisible(selector='[aria-label="Loading...]"')
-        scraper.find_element(
-            selector='//span[translate(text(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "shared to your group."]',
-            by=By.XPATH,
-            exit_on_missing_element=False,
-            wait_element_time=10)
+    return False
 
 
 def define_groups_for_posting(listing: Listing) -> list[str]:
@@ -711,6 +722,34 @@ def define_groups_for_posting(listing: Listing) -> list[str]:
         group_names.extend(group_names_from_config)
 
     return group_names
+
+
+def click_listing_by_title(scraper: Scraper, title: str) -> bool:
+    # Try to find listing container on page
+    listing_container_selector = XPATH.selling_listing_container(title)
+    listing_container = scraper.find_element(selector=listing_container_selector,
+                                             by=By.XPATH,
+                                             exit_on_missing_element=False)
+
+    if not listing_container:
+        listing_container = find_listing_by_title(scraper=scraper, title=title)
+
+    if not listing_container:
+        return False
+
+    scraper.scroll_to_element(selector=listing_container,
+                              by=By.XPATH,
+                              exit_on_missing_element=False)
+
+    listing_clickable_element_selector = XPATH.selling_listing_container_clickable_element(title)
+    listing_clickable_element = scraper.find_element_and_click(listing_clickable_element_selector,
+                                                               by=By.XPATH,
+                                                               exit_on_missing_element=False,
+                                                               scroll_to=False)
+    if listing_clickable_element:
+        return True
+    else:
+        return scraper.element_click(listing_container)
 
 
 def find_listing_by_title(scraper: Scraper, title: str) -> WebElement | None:

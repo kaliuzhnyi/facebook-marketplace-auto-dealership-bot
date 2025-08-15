@@ -1,9 +1,13 @@
+import asyncio
+import datetime
 import os
 import threading
+from queue import SimpleQueue, Empty
+from typing import Any
 
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
-from nicegui import ui
+from nicegui import ui, app, Client
 from nicegui.events import ValueChangeEventArguments
 
 from config import CONFIG_LOG_USER_FILE_PATH, CONFIG_LOG_SYSTEM_FILE_PATH, CONFIG_DATA_PATH, CONFIG, save_config
@@ -11,16 +15,50 @@ from helpers.csv_helper import get_data_from_csv
 from helpers.data_helper import import_data_to_csv
 from helpers.listing_helper import check_and_update_listings, check_and_remove_listings
 from helpers.scraper import Scraper, ScraperDriverManager
-from logger import system_logger, user_logger
+from logger import system_logger
 
 scraper_driver_manager: ScraperDriverManager | None = None
 scraper: Scraper | None = None
-
-scheduler = BackgroundScheduler()
-scheduler.start()
+scheduler: AsyncIOScheduler | None = None
 
 
-def launch_browser_and_open_gui():
+class NotifyBin:
+    _queue: SimpleQueue[dict[str, Any]] = SimpleQueue()
+
+    _defaults: dict[str, Any] = {
+        'type': 'info',
+        'close_button': True,
+        'timeout': 3000,
+    }
+
+    @classmethod
+    def add(cls, **kwargs):
+        cls._queue.put({**cls._defaults, **kwargs})
+
+    @classmethod
+    def get(cls) -> dict[str, Any]:
+        return cls._queue.get()
+
+    @classmethod
+    def empty(cls) -> bool:
+        return cls._queue.empty()
+
+    @classmethod
+    def get_nowait(cls) -> dict[str, Any]:
+        try:
+            return cls._queue.get_nowait()
+        except Empty:
+            return {}
+
+
+def launch_schedule() -> None:
+    global scheduler
+    if scheduler is None:
+        scheduler = AsyncIOScheduler()
+    scheduler.start()
+
+
+def launch_browser_and_open_gui() -> None:
     global scraper, scraper_driver_manager
 
     launch_facebook_marketplace_bot()
@@ -32,14 +70,39 @@ def launch_browser_and_open_gui():
     scraper_driver_manager.driver.get('http://localhost:8080')
 
 
-def launch_facebook_marketplace_bot():
+def launch_facebook_marketplace_bot() -> None:
     current_log_file = CONFIG_LOG_USER_FILE_PATH
 
     button_stop = None
     button_start_with_schedule = None
 
-    def run_marketplace_bot():
+    async def upload_data_and_start_marketplace_bot():
+
+        # Upload listings
+        NotifyBin.add(message='Uploading data...')
+        result = await asyncio.to_thread(import_data_to_csv, CONFIG['data']['path'], CONFIG['data']['upload_limit'])
+        if result:
+            NotifyBin.add(message=f'Successfully uploaded and saved {result} listings', type='positive')
+        else:
+            NotifyBin.add(message='No data to upload and save', type='negative')
+            return
+
+        # Posting listings
+        NotifyBin.add(message='Publishing listings...')
+
+        result = []
+        await asyncio.to_thread(run_marketplace_bot, listings_limit=1, result=result)
+        if result:
+            for listing in result:
+                NotifyBin.add(message=f'Successfully published listing: {listing.title}', type='positive')
+        else:
+            NotifyBin.add(message='No listings have been published.', type='negative')
+            return
+
+    def run_marketplace_bot(listings_limit: int | None = None, result: list | None = None):
         global scraper, scraper_driver_manager
+
+        system_logger.info("Start bot")
 
         scraper_driver_manager.create_tab('facebook')
         scraper = Scraper(driver=scraper_driver_manager.driver, url='https://facebook.com/')
@@ -50,12 +113,22 @@ def launch_facebook_marketplace_bot():
 
         # Get data for vehicle type listings from csvs/vehicles.csv
         vehicle_listings = get_data_from_csv(CONFIG_DATA_PATH)
+
         # Publish all the vehicles into the facebook marketplace
         check_and_remove_listings(listings=vehicle_listings, scraper=scraper)
-        check_and_update_listings(listings=vehicle_listings, scraper=scraper)
+        check_and_update_listings(listings=vehicle_listings, scraper=scraper, listings_limit=listings_limit,
+                                  result=result)
 
-    def on_start_button_click() -> None:
-        threading.Thread(target=run_marketplace_bot).start()
+    async def on_start_button_click(listings_limit: int | None = None) -> None:
+        ui.notify("Publishing listings...", type='info', close_button=True)
+
+        result = []
+        await asyncio.to_thread(run_marketplace_bot, listings_limit=listings_limit, result=result)
+        if result:
+            for listing in result:
+                ui.notify(f'Successfully published listing: {listing.title}', type='positive')
+        else:
+            ui.notify('No listings have been published.', type='negative')
 
     def on_start_with_schedule_button() -> None:
         if button_start_with_schedule:
@@ -71,8 +144,18 @@ def launch_facebook_marketplace_bot():
         if not trigger_crontab:
             return
 
+        now = datetime.datetime.now()
         trigger = CronTrigger.from_crontab(trigger_crontab)
-        scheduler.add_job(run_marketplace_bot, trigger=trigger, id=job_id)
+        scheduler.add_job(func=upload_data_and_start_marketplace_bot,
+                          trigger=trigger,
+                          id=job_id,
+                          max_instances=1,
+                          coalesce=True)
+
+        if scheduler.get_job(job_id):
+            log_text = f'Job successfully added, next run time {trigger.get_next_fire_time(None, now)}'
+            system_logger.info(log_text)
+            ui.notify(log_text, type='positive')
 
     def on_stop_button() -> None:
         if button_start_with_schedule:
@@ -84,12 +167,13 @@ def launch_facebook_marketplace_bot():
         if scheduler.get_job(job_id):
             scheduler.remove_job(job_id)
 
-    def on_upload_data_button_click() -> None:
-        import_result = import_data_to_csv(CONFIG['data']['path'], CONFIG['data']['upload_limit'])
-        if import_result:
-            ui.notify(f'Successfully uploaded and saved {import_result} listings', type='positive')
+    async def on_upload_data_button_click() -> None:
+        ui.notify("Uploading data...", type='info', close_button=True)
+        result = await asyncio.to_thread(import_data_to_csv, CONFIG['data']['path'], CONFIG['data']['upload_limit'])
+        if result:
+            ui.notify(f'Successfully uploaded and saved {result} listings', type='positive')
         else:
-            ui.notify(f'No data to upload and save', type='negative')
+            ui.notify('No data to upload and save', type='negative')
 
     def on_save_config_button_click() -> None:
         CONFIG['scraper']['action_random_delay']['min'] = config_field_action_random_delay_min.value
@@ -128,6 +212,18 @@ def launch_facebook_marketplace_bot():
     system_logger.info('Build program UI - start')
 
     ui.timer(0.5, update_log_view)
+
+    def notify():
+        while not NotifyBin.empty():
+            kwargs = NotifyBin.get_nowait()
+            for client in Client.instances.values():
+                if not client.has_socket_connection:
+                    continue
+                with client:
+                    ui.notify(**kwargs)
+
+    ui.timer(1, notify)
+
     with ((ui.column().classes('w-full items-center'))):
         ui.markdown('# **Facebook Marketplace Auto Dealership Bot**')
         ui.markdown('Publish all your ads easy')
@@ -140,16 +236,16 @@ def launch_facebook_marketplace_bot():
             with ui.button(text='Stop', on_click=on_stop_button, color='negative') as button_stop:
                 ui.tooltip('Start process.')
 
-            button_upload_data = (
-                ui.button(text="Upload data", on_click=on_upload_data_button_click, color='secondary')
-                .tooltip('Upload and/or update data to inner database from external resources'))
+            ui.button(text="Upload data", on_click=on_upload_data_button_click, color='secondary') \
+                .tooltip('Upload and/or update data to inner database from external resources')
 
             with ui.button(text="Start", on_click=on_start_button_click):
                 ui.tooltip('Start publish listings')
 
         with ui.expansion('Config').classes('w-full'):
             with ui.row():
-                ui.button(text="Save", on_click=on_save_config_button_click)
+                ui.button(text="Save", on_click=on_save_config_button_click) \
+                    .tooltip('Save config')
             with ui.tabs().classes('w-full') as tabs:
                 tab_panel_scraper = ui.tab('Scaper')
                 tab_panel_listings = ui.tab('Listings')
@@ -253,8 +349,10 @@ def launch_facebook_marketplace_bot():
 # if __name__ in {"__main__", "__mp_main__"}:
 if __name__ == "__main__":
     system_logger.info('Start program')
-    user_logger.info('Start program')
     threading.Thread(target=launch_browser_and_open_gui).start()
+
+    app.on_startup(launch_schedule)
+
     ui.run(title="Facebook Bot Control",
            port=8080,
            show=False,

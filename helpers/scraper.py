@@ -223,6 +223,31 @@ class Scraper:
 
         return None
 
+    def find_element_and_click(self,
+                               selector: str | WebElement,
+                               by: str = By.CSS_SELECTOR,
+                               condition=EC.element_to_be_clickable,
+                               exit_on_missing_element: bool = True,
+                               wait_element_time: int | None = None,
+                               use_cursor: bool = True,
+                               scroll_to: bool = True) -> WebElement | None:
+        element = self.find_element(selector=selector,
+                                    by=by,
+                                    condition=condition,
+                                    exit_on_missing_element=exit_on_missing_element,
+                                    wait_element_time=wait_element_time)
+        if not element:
+            return None
+
+        if scroll_to:
+            self.scroll_to_element(selector=element)
+
+        click_result = self.element_click(selector=element, use_cursor=use_cursor)
+        if not click_result:
+            return None
+
+        return element
+
     def find_elements_with_scrolling(self, selector: str, by: str, wait_elements_time: int | None = 10) -> list[
         WebElement]:
         if wait_elements_time is None:
@@ -300,9 +325,12 @@ class Scraper:
         return False
 
     # Wait random time before sending the keys to the element
-    def element_send_keys(self, selector: str, text: str, delay: bool = True,
-                          exit_on_missing_element: bool = True,
-                          by: str = By.CSS_SELECTOR) -> None:
+    def element_send_keys(self,
+                          text: str,
+                          selector: str,
+                          by: str = By.CSS_SELECTOR,
+                          delay: bool = True,
+                          exit_on_missing_element: bool = True) -> None:
         if delay:
             self.wait_action_random_time()
 
@@ -318,12 +346,6 @@ class Scraper:
             self.driver.execute_script("arguments[0].click();", element)
 
         element.send_keys(text)
-
-    # Wait random time before sending the keys to the element
-    def element_send_keys_by_xpath(self, xpath: str, text: str, delay: bool = True,
-                                   exit_on_missing_element: bool = True) -> None:
-        return self.element_send_keys(selector=xpath, text=text, delay=delay,
-                                      exit_on_missing_element=exit_on_missing_element, by=By.XPATH)
 
     def input_file_add_files(self, selector, files):
         # Initialize the condition to wait
@@ -369,21 +391,30 @@ class Scraper:
         # Remove the selected text with backspace
         element.send_keys(Keys.BACK_SPACE)
 
-    def element_wait_to_be_invisible(self, selector: str, by: str = By.CSS_SELECTOR) -> None:
-        wait_until = EC.invisibility_of_element_located((by, selector))
+    def element_wait_to_be_invisible(self,
+                                     selector: str,
+                                     by: str = By.CSS_SELECTOR,
+                                     condition=EC.invisibility_of_element_located) -> None:
+        """
+            Wait until the specified element becomes invisible.
+
+            :param selector: Selector string (XPath, CSS, etc.)
+            :param by: Type of selector (By.XPATH, By.CSS_SELECTOR, etc.)
+            :param condition: Expected condition to wait for (default: invisibility_of_element_located)
+            """
+        logger.system_logger.debug(f"Waiting for element to be invisible: {by}='{selector}'")
 
         try:
+            wait_until = condition((by, selector))
             WebDriverWait(self.driver, self.wait_element_time).until(wait_until)
-        except:
-            print('Warning when waiting the element with selector "' + selector + '" to be invisible')
-
-    def element_wait_to_be_invisible_by_xpath(self, xpath):
-        wait_until = EC.invisibility_of_element_located((By.XPATH, xpath))
-
-        try:
-            WebDriverWait(self.driver, self.wait_element_time).until(wait_until)
-        except:
-            print('Warning when waiting the element with xpath "' + xpath + '" to be invisible')
+            logger.system_logger.debug(f"Element is now invisible: {by}='{selector}'")
+        except TimeoutException:
+            logger.system_logger.warning(
+                f"Timeout: Element still visible after {self.wait_element_time}s: {by}='{selector}'")
+        except WebDriverException as e:
+            logger.system_logger.error(f"WebDriver error while waiting invisibility: {e}", exc_info=True)
+        except Exception as e:
+            logger.system_logger.error(f"Unexpected error while waiting invisibility: {e}", exc_info=True)
 
     def scroll_to_element(self,
                           selector: str | WebElement,

@@ -152,6 +152,7 @@ class PublishedListing:
     price: float = 0.0
     location: str = ''
     mileage: int = 0
+    fuel_type: FuelType = None
 
     published_date: datetime.date = None
 
