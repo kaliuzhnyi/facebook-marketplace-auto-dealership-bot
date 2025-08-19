@@ -115,9 +115,16 @@ def launch_facebook_marketplace_bot() -> None:
         vehicle_listings = get_data_from_csv(CONFIG_DATA_PATH)
 
         # Publish all the vehicles into the facebook marketplace
-        check_and_remove_listings(listings=vehicle_listings, scraper=scraper)
-        check_and_update_listings(listings=vehicle_listings, scraper=scraper, listings_limit=listings_limit,
-                                  result=result)
+        check_and_remove_listings(
+            listings=vehicle_listings,
+            scraper=scraper
+        )
+        check_and_update_listings(
+            listings=vehicle_listings,
+            scraper=scraper,
+            listings_limit=listings_limit,
+            result=result
+        )
 
     async def on_start_button_click(listings_limit: int | None = None) -> None:
         ui.notify("Publishing listings...", type='info', close_button=True)

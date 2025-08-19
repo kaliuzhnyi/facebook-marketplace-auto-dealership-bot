@@ -48,10 +48,12 @@ class XPATH:
         return f'contains({cls.translate_expr(str1, str2, str3)}, "{value.lower()}")'
 
 
-def check_and_update_listings(scraper: Scraper, listings: list[Listing],
-                              published_listings: list[WebElement] | None = None,
-                              listings_limit: int | None = None,
-                              result: list[Listing] | None = None) -> None:
+def check_and_update_listings(
+        scraper: Scraper, listings: list[Listing],
+        published_listings: list[WebElement] | None = None,
+        listings_limit: int | None = None,
+        result: list[Listing] | None = None
+) -> None:
     if not listings:
         return
 
@@ -112,8 +114,10 @@ def check_and_remove_listings(scraper: Scraper,
                               published_listings: list[PublishedListing] | None = None) -> None:
     if published_listings is None:
         published_listing_elements = find_all_published_listing_elements(scraper=scraper)
-        published_listings = get_all_published_listings(scraper=scraper,
-                                                        published_listing_elements=published_listing_elements)
+        published_listings = get_all_published_listings(
+            scraper=scraper,
+            published_listing_elements=published_listing_elements
+        )
 
     for published_listing in published_listings:
         if (not published_listing.title or
@@ -334,7 +338,10 @@ def get_published_listing(
     return listing
 
 
-def remove_published_listing(scraper: Scraper, published_listing: PublishedListing) -> None:
+def remove_published_listing(
+        scraper: Scraper,
+        published_listing: PublishedListing
+) -> None:
     if not click_listing_by_title(scraper=scraper, title=published_listing.title):
         return
 

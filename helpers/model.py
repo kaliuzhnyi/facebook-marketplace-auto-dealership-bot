@@ -26,6 +26,10 @@ class VehicleType(BaseEnum):
 
     _default_value = CAR_TRUCK
 
+    @property
+    def default_value(self):
+        return self._default_value
+
 
 class BodyType(BaseEnum):
     COUPE = 'Coupe'
@@ -40,6 +44,10 @@ class BodyType(BaseEnum):
     OTHER = 'Other'
 
     _default_value = OTHER
+
+    @property
+    def default_value(self):
+        return self._default_value
 
 
 class BaseColor(BaseEnum):
@@ -66,6 +74,10 @@ class BaseColor(BaseEnum):
 
     _default_value = OTHER
 
+    @property
+    def default_value(self):
+        return self._default_value
+
 
 class FuelType(BaseEnum):
     DIESEL = "Diesel"
@@ -88,6 +100,10 @@ class FuelType(BaseEnum):
             return FuelType.GASOLINE
         return FuelType._default_value
 
+    @property
+    def default_value(self):
+        return self._default_value
+
 
 class VehicleCondition(BaseEnum):
     EXCELLENT = "Excellent"
@@ -97,6 +113,10 @@ class VehicleCondition(BaseEnum):
     POOR = "Poor"
 
     _default_value = GOOD
+
+    @property
+    def default_value(self):
+        return self._default_value
 
 
 class Transmission(BaseEnum):
@@ -119,16 +139,16 @@ class Transmission(BaseEnum):
 class Listing:
     photos_folder: str = ''
     photos_names: list[str] = None
-    vehicle_type: VehicleType = VehicleType._default_value
-    vehicle_condition: VehicleCondition | None = VehicleCondition._default_value
-    body_type: BodyType = BodyType._default_value
+    vehicle_type: VehicleType = VehicleType.default_value
+    vehicle_condition: VehicleCondition | None = VehicleCondition.default_value
+    body_type: BodyType = BodyType.default_value
     year: int | None = None
     make: str = ''
     model: str = ''
-    exterior_color: BaseColor = BaseColor._default_value
-    interior_color: BaseColor = BaseColor._default_value
+    exterior_color: BaseColor = BaseColor.default_value
+    interior_color: BaseColor = BaseColor.default_value
     mileage: int = 0
-    fuel_type: FuelType = FuelType._default_value
+    fuel_type: FuelType = FuelType.default_value
     transmission: Transmission | None = None
     price: float = 0.0
     title: str = ''
@@ -155,7 +175,6 @@ class PublishedListing:
     fuel_type: FuelType = None
 
     published_date: datetime.date = None
-
 
     def __getitem__(self, key):
         return getattr(self, key)
