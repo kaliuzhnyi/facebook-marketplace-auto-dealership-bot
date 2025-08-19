@@ -163,9 +163,11 @@ def get_all_published_listings(scraper: Scraper,
     return result
 
 
-def get_published_listing(scraper: Scraper,
-                          published_listing_element: WebElement,
-                          extended_info: bool = False) -> PublishedListing:
+def get_published_listing(
+        scraper: Scraper,
+        published_listing_element: WebElement,
+        extended_info: bool = False
+) -> PublishedListing:
     published_listening_title_element_selector = \
         './/div/div/div/div[2]/div/div[1]/div/div[2]/div/div[1]/span/span/span'
     published_listening_price_element_selector = \
@@ -181,7 +183,8 @@ def get_published_listing(scraper: Scraper,
     title = ''
     title_element = element.find_elements(
         by=By.XPATH,
-        value=published_listening_title_element_selector)
+        value=published_listening_title_element_selector
+    )
     if title_element:
         title = title_element[0].text
 
@@ -189,7 +192,8 @@ def get_published_listing(scraper: Scraper,
     price = 0.0
     price_element = element.find_elements(
         by=By.XPATH,
-        value=published_listening_price_element_selector)
+        value=published_listening_price_element_selector
+    )
     if price_element:
         price_element = price_element[0]
         price_text = price_element.text
@@ -206,7 +210,8 @@ def get_published_listing(scraper: Scraper,
     published_date = None
     published_date_element = element.find_elements(
         by=By.XPATH,
-        value=published_listening_published_date_element_selector)
+        value=published_listening_published_date_element_selector
+    )
     if published_date_element:
         published_date_element = published_date_element[0]
         published_date_text = published_date_element.text.lower()
@@ -229,9 +234,11 @@ def get_published_listing(scraper: Scraper,
     if extended_info:
         if click_listing_by_title(scraper=scraper, title=title):
             listing_link_element_selector = f'.//a[contains(@href, "marketplace/item") and .//span[translate(text(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz") = "{title.lower()}"]]'
-            listing_link_element = scraper.find_element(selector=listing_link_element_selector,
-                                                        by=By.XPATH,
-                                                        exit_on_missing_element=False)
+            listing_link_element = scraper.find_element(
+                selector=listing_link_element_selector,
+                by=By.XPATH,
+                exit_on_missing_element=False
+            )
             if listing_link_element:
                 scraper.element_click(selector=listing_link_element_selector, by=By.XPATH)
 
@@ -295,33 +302,33 @@ def get_published_listing(scraper: Scraper,
                     listing.fuel_type = FuelType.from_str(fuel_type)
 
                 # Close listing detailed control panel
-                close_button_selector = (f'//*[{XPATH.translate_eq_expr("close", "@aria-label")} '
-                                         f'and {XPATH.translate_eq_expr("false", "@aria-hidden")} '
-                                         f'and {XPATH.translate_eq_expr("button", "@role")}]')
-                close_button = scraper.find_element(selector=close_button_selector,
-                                                    by=By.XPATH,
-                                                    exit_on_missing_element=False)
-                if close_button:
-                    scraper.element_click(selector=close_button_selector,
-                                          by=By.XPATH,
-                                          exit_on_missing_element=False,
-                                          use_cursor=True)
-                else:
+                close_button_selector = (
+                    f'//*[{XPATH.translate_eq_expr("close", "@aria-label")} '
+                    f'and {XPATH.translate_eq_expr("false", "@aria-hidden")} '
+                    f'and {XPATH.translate_eq_expr("button", "@role")}]'
+                )
+                close_button = scraper.find_element_and_click(
+                    selector=close_button_selector,
+                    by=By.XPATH,
+                    exit_on_missing_element=False,
+                    use_cursor=True
+                )
+                if not close_button:
                     scraper.send_key(Keys.ESCAPE)
 
             # Close listing control window
-            close_button_selector = (f'//*[{XPATH.translate_eq_expr("close", "@aria-label")} '
-                                     f'and {XPATH.translate_eq_expr("0", "@tabindex")} '
-                                     f'and {XPATH.translate_eq_expr("button", "@role")}]')
-            close_button = scraper.find_element(selector=close_button_selector,
-                                                by=By.XPATH,
-                                                exit_on_missing_element=False)
-            if close_button:
-                scraper.element_click(selector=close_button_selector,
-                                      by=By.XPATH,
-                                      exit_on_missing_element=False,
-                                      use_cursor=True)
-            else:
+            close_button_selector = (
+                f'//*[{XPATH.translate_eq_expr("close", "@aria-label")} '
+                f'and {XPATH.translate_eq_expr("0", "@tabindex")} '
+                f'and {XPATH.translate_eq_expr("button", "@role")}]'
+            )
+            close_button = scraper.find_element_and_click(
+                selector=close_button_selector,
+                by=By.XPATH,
+                exit_on_missing_element=False,
+                use_cursor=True
+            )
+            if not close_button:
                 scraper.send_key(Keys.ESCAPE)
 
     return listing
@@ -332,27 +339,39 @@ def remove_published_listing(scraper: Scraper, published_listing: PublishedListi
         return
 
     # Click on the delete listing button
-    delete_element_selector = (f"//div[not(@role='gridcell')]"
-                               f"/div[{XPATH.translate_eq_expr('delete', '@aria-label')} and @tabindex='0']")
-    delete_element = scraper.find_element_and_click(selector=delete_element_selector,
-                                                    by=By.XPATH,
-                                                    exit_on_missing_element=False)
+    delete_element_selector = (
+        f"//div[not(@role='gridcell')]"
+        f"/div[{XPATH.translate_eq_expr('delete', '@aria-label')} and @tabindex='0']"
+    )
+    delete_element = scraper.find_element_and_click(
+        selector=delete_element_selector,
+        by=By.XPATH,
+        exit_on_missing_element=False
+    )
     if not delete_element:
         scraper.send_key(Keys.ESCAPE)
         return
 
     # Click on confirm button to delete
-    confirm_delete_element_selector = (f'//div[{XPATH.translate_eq_expr("delete listing", "@aria-label")}]'
-                                       f'//div[{XPATH.translate_eq_expr("delete", "@aria-label")} and @tabindex="0"]')
-    confirm_delete_element = scraper.find_element_and_click(selector=confirm_delete_element_selector,
-                                                            by=By.XPATH,
-                                                            exit_on_missing_element=False)
+    confirm_delete_element_selector = (
+        f'//div[{XPATH.translate_eq_expr("delete listing", "@aria-label")}]'
+        f'//div[{XPATH.translate_eq_expr("delete", "@aria-label")} and @tabindex="0"]'
+    )
+    confirm_delete_element = scraper.find_element_and_click(
+        selector=confirm_delete_element_selector,
+        by=By.XPATH,
+        exit_on_missing_element=False
+    )
     if not confirm_delete_element:
-        confirm_delete_element_selector = (f'//div[{XPATH.translate_eq_expr("dialog", "@aria-label")}]'
-                                           f'//div[{XPATH.translate_eq_expr("delete", "@aria-label")} and @tabindex="0"] and @role="button" and not(.//i)')
-        confirm_delete_element = scraper.find_element_and_click(selector=confirm_delete_element_selector,
-                                                                by=By.XPATH,
-                                                                exit_on_missing_element=False)
+        confirm_delete_element_selector = (
+            f'//div[{XPATH.translate_eq_expr("dialog", "@aria-label")}]'
+            f'//div[{XPATH.translate_eq_expr("delete", "@aria-label")} and @tabindex="0"] and @role="button" and not(.//i)'
+        )
+        confirm_delete_element = scraper.find_element_and_click(
+            selector=confirm_delete_element_selector,
+            by=By.XPATH,
+            exit_on_missing_element=False
+        )
 
     if not confirm_delete_element:
         scraper.send_key(Keys.ESCAPE)
@@ -727,25 +746,30 @@ def define_groups_for_posting(listing: Listing) -> list[str]:
 def click_listing_by_title(scraper: Scraper, title: str) -> bool:
     # Try to find listing container on page
     listing_container_selector = XPATH.selling_listing_container(title)
-    listing_container = scraper.find_element(selector=listing_container_selector,
-                                             by=By.XPATH,
-                                             exit_on_missing_element=False)
-
+    listing_container = scraper.find_element(
+        selector=listing_container_selector,
+        by=By.XPATH,
+        exit_on_missing_element=False
+    )
     if not listing_container:
         listing_container = find_listing_by_title(scraper=scraper, title=title)
 
     if not listing_container:
         return False
 
-    scraper.scroll_to_element(selector=listing_container,
-                              by=By.XPATH,
-                              exit_on_missing_element=False)
+    scraper.scroll_to_element(
+        selector=listing_container,
+        by=By.XPATH,
+        exit_on_missing_element=False
+    )
 
     listing_clickable_element_selector = XPATH.selling_listing_container_clickable_element(title)
-    listing_clickable_element = scraper.find_element_and_click(listing_clickable_element_selector,
-                                                               by=By.XPATH,
-                                                               exit_on_missing_element=False,
-                                                               scroll_to=False)
+    listing_clickable_element = scraper.find_element_and_click(
+        listing_clickable_element_selector,
+        by=By.XPATH,
+        exit_on_missing_element=False,
+        scroll_to=False
+    )
     if listing_clickable_element:
         return True
     else:
